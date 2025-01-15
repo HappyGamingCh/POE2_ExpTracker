@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoE2 Experience Tracker v0.1</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Path of Exile 2 Experience Tracker <span class="version">v0.1</span></h1>
+        <div class="current-progress">
+            <h2>Current Progress</h2>
+            <p id="currentProgress"></p>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+        </div>
+        <div class="input-section">
+            <div class="character-inputs">
+                <div class="input-group">
+                    <label for="characterName">Character Name:</label>
+                    <input type="text" id="characterName" placeholder="Enter character name">
+                </div>
+                <div class="input-group">
+                    <label for="characterClass">Character Class:</label>
+                    <select id="characterClass">
+                        <option value="X">Class X</option>
+                        <option value="Y">Class Y</option>
+                        <option value="Z">Class Z</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="currentLevel">Character Level:</label>
+                    <input type="number" id="currentLevel" placeholder="Current Level">
+                </div>
+                <div class="input-group">
+                    <label for="requiredExp">Required EXP for Level: <span class="required">*</span></label>
+                    <input type="number" id="requiredExp" placeholder="Required Exp for Level" required>
+                </div>
+                <div class="input-group">
+                    <label for="currentExp">Current Total EXP: <span class="required">*</span></label>
+                    <input type="number" id="currentExp" placeholder="Current Experience" required>
+                </div>
+            </div>
+
+            <div class="map-details">
+                <h3>Map Details</h3>
+                <div class="map-input-row">
+                    <div class="input-group">
+                        <label for="mapName">Map Name: <span class="required">*</span></label>
+                        <select id="mapName" required>
+                            <option value="">Select Map</option>
+                            <option value="A">Map A</option>
+                            <option value="B">Map B</option>
+                            <option value="C">Map C</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="mapLevel">Map Level:</label>
+                        <input type="number" id="mapLevel" placeholder="Map Level">
+                    </div>
+                </div>
+                <div class="activities-group">
+                    <label>Map Activities:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="activity" value="breach"> Breach</label>
+                        <label><input type="checkbox" name="activity" value="delirium"> Delirium</label>
+                        <label><input type="checkbox" name="activity" value="boss"> Boss</label>
+                        <label><input type="checkbox" name="activity" value="ritual"> Ritual</label>
+                        <label><input type="checkbox" name="activity" value="unique"> Unique</label>
+                        <label><input type="checkbox" name="activity" value="expedition"> Expedition</label>
+                        <label><input type="checkbox" name="activity" value="hideout"> Hideout</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="recordExperience()">Record Experience</button>
+                <button onclick="clearAllData()" class="clear-btn">Clear All Data</button>
+            </div>
+            <div id="recordSummary" class="record-summary"></div>
+        </div>
+        <div class="results">
+            <h2>Latest Map Results</h2>
+            <p id="expGained"></p>
+            <p id="expPercentage"></p>
+        </div>
+        <div class="history">
+            <h2>History</h2>
+            <ul id="expHistory"></ul>
+        </div>
+        <div class="graph-container">
+            <div class="graph-header">
+                <h2>Experience History</h2>
+                <button class="toggle-graph-btn" onclick="toggleGraphSize()">
+                    <span>Hide Graph</span>
+                    <span class="icon">⌃</span>
+                </button>
+            </div>
+            <canvas id="expChart"></canvas>
+        </div>
+        <div class="analysis-section">
+            <h2>Analysis</h2>
+            <div class="analysis-container">
+                <div class="analysis-group">
+                    <h3>Map Analysis</h3>
+                    <div class="analysis-charts">
+                        <div class="analysis-box">
+                            <h4>Average Experience by Map</h4>
+                            <canvas id="mapExpAnalysisChart"></canvas>
+                        </div>
+                        <div class="analysis-box doughnut-chart">
+                            <h4>Map Run Frequency</h4>
+                            <canvas id="mapFreqAnalysisChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="analysis-group">
+                    <h3>Activity Analysis</h3>
+                    <div class="analysis-charts">
+                        <div class="analysis-box">
+                            <h4>Average Experience by Activity</h4>
+                            <canvas id="activityExpAnalysisChart"></canvas>
+                        </div>
+                        <div class="analysis-box doughnut-chart">
+                            <h4>Activity Frequency</h4>
+                            <canvas id="activityFreqAnalysisChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="donate">
+                <p>Support this project</p>
+                <a href="#" class="donate-button">Donate</a>
+            </div>
+            <div class="copyright">
+                © 2024 PoE2 Experience Tracker. All rights reserved.
+            </div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

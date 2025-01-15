@@ -1,0 +1,672 @@
+body {
+    background: #1a1a1a;
+    color: #c7c7c7;
+    font-family: 'Fontin', 'Noto Sans', Arial, sans-serif;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.input-section {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #af6025;
+}
+
+.character-inputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(45, 24, 16, 0.3);
+    border-radius: 5px;
+    border: 1px solid #af6025;
+}
+
+/* ปรับสำหรับ input แรกที่ต้องการให้กินพื้นที่เต็มแถว */
+.character-inputs .input-group:first-child {
+    grid-column: 1 / -1;
+}
+
+.character-inputs .input-group {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.character-inputs .input-group label {
+    min-width: 150px;
+    font-weight: bold;
+    color: #e7c491;
+}
+
+.character-inputs .input-group input,
+.character-inputs .input-group select {
+    flex: 1;
+    padding: 10px;
+    height: 40px;
+    font-size: 1em;
+    background: #2d2d2d;
+    border: 1px solid #af6025;
+    color: #c7c7c7;
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.character-inputs .input-group select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23af6025' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10px) center;
+    padding-right: 30px;
+}
+
+.character-inputs .input-group input:focus,
+.character-inputs .input-group select:focus {
+    outline: none;
+    border-color: #e7c491;
+    box-shadow: 0 0 10px rgba(175, 96, 37, 0.3);
+}
+
+.character-inputs .input-group input:hover,
+.character-inputs .input-group select:hover {
+    border-color: #e7c491;
+}
+
+.map-input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.map-input-row .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.map-input-row .input-group label {
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.map-input-row .input-group input,
+.map-input-row .input-group select {
+    flex: 1;
+    width: 100%;
+    max-width: none;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+}
+
+.input-group label {
+    min-width: 200px;
+    font-weight: bold;
+    color: #e7c491;
+    flex-shrink: 0;
+}
+
+.input-group input, .input-group select {
+    flex: 1;
+    max-width: 300px;
+}
+
+.button-group {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.clear-btn {
+    background: linear-gradient(to bottom, #8b0000, #5c0000);
+    border-color: #ff6b6b;
+}
+
+.clear-btn:hover {
+    background: linear-gradient(to bottom, #a00000, #8b0000);
+}
+
+input {
+    margin: 5px;
+    padding: 8px;
+    background: #2d2d2d;
+    border: 1px solid #af6025;
+    color: #c7c7c7;
+    border-radius: 3px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #e7c491;
+    box-shadow: 0 0 5px rgba(175, 96, 37, 0.5);
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    background: linear-gradient(to bottom, #af6025, #8b4513);
+    color: #e7c491;
+    border: 1px solid #e7c491;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #cf7025, #af6025);
+}
+
+.results, .history {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #af6025;
+    border-radius: 5px;
+    background: linear-gradient(to right, #2d1810, #462b1e);
+}
+
+.history {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history::-webkit-scrollbar-track {
+    background: #2d1810;
+}
+
+.history::-webkit-scrollbar-thumb {
+    background: #af6025;
+    border-radius: 4px;
+}
+
+.history::-webkit-scrollbar-thumb:hover {
+    background: #cf7025;
+}
+
+#graphContainer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#graphContainer img {
+    max-width: 100%;
+}
+
+.graph-container {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #af6025;
+    border-radius: 5px;
+    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
+    height: auto;
+    min-height: 500px;
+    box-shadow: 0 0 15px rgba(175, 96, 37, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    min-height: 40px; /* ความสูงขั้นต่ำเพื่อให้มีพื้นที่สำหรับปุ่ม */
+}
+
+.toggle-graph-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #af6025;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.toggle-graph-btn:hover {
+    color: #e7c491;
+}
+
+.toggle-graph-btn .icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.graph-container.collapsed {
+    min-height: auto;
+    height: auto;
+    padding-bottom: 10px;
+}
+
+.graph-container.collapsed .toggle-graph-btn .icon {
+    transform: rotate(180deg);
+}
+
+.graph-container.collapsed canvas {
+    display: none;
+}
+
+.graph-container canvas {
+    width: 100% !important;
+    height: calc(100% - 60px) !important; /* ลบความสูงของ header */
+}
+
+.graph-container.collapsed {
+    height: 100px;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto !important; /* เปลี่ยนจาก fixed height เป็น auto */
+    min-height: auto !important; /* ลบ min-height คงที่ */
+}
+
+#expPercentage {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #e7c491;
+    background: transparent;
+    padding: 10px 0;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.current-progress {
+    background: linear-gradient(to right, #2d1810, #462b1e);
+    padding: 15px 20px; /* ลด padding ด้านบนล่าง */
+    border-radius: 5px;
+    border: 1px solid #af6025;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(175, 96, 37, 0.3);
+}
+
+#currentProgress {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #e7c491;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h1, h2 {
+    color: #af6025;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Fontin-Bold', 'Noto Sans Bold', Arial, sans-serif;
+}
+
+#expHistory {
+    list-style: none;
+    padding: 0;
+}
+
+#expHistory li {
+    padding: 8px;
+    margin: 5px 0;
+    border-bottom: 1px solid #af6025;
+    color: #e7c491;
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-map-info {
+    flex: 1;
+}
+
+.history-activities {
+    color: #af6025;
+    font-style: italic;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 30px;
+    background: #2d1810;
+    border-radius: 15px;
+    padding: 3px;
+    border: 1px solid #af6025;
+    margin-top: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar {
+    position: relative;
+    height: 100%;
+    background: linear-gradient(to right, #af6025, #e7c491);
+    border-radius: 12px;
+    transition: width 0.5s ease-in-out;
+    width: 0%;
+}
+
+.progress-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #2d1810;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-shadow: 0 0 2px rgba(231, 196, 145, 0.5);
+    white-space: nowrap;
+}
+
+/* เพิ่ม animation effect สำหรับ progress bar */
+@keyframes progressGlow {
+    0% { box-shadow: 0 0 5px #af6025; }
+    50% { box-shadow: 0 0 15px #e7c491; }
+    100% { box-shadow: 0 0 5px #af6025; }
+}
+
+.progress-bar {
+    animation: progressGlow 2s infinite;
+}
+
+.map-details {
+    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    border: 1px solid #af6025;
+    flex: 1;
+    min-width: 300px;
+}
+
+.map-details h3 {
+    color: #e7c491;
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+}
+
+.map-details select {
+    background: #2d2d2d;
+    color: #c7c7c7;
+    border: 1px solid #af6025;
+    padding: 8px;
+    border-radius: 3px;
+    width: 200px;
+    margin: 5px;
+    height: 37px; /* ให้สูงเท่ากับ input */
+}
+
+.map-details select:focus {
+    outline: none;
+    border-color: #e7c491;
+    box-shadow: 0 0 5px rgba(175, 96, 37, 0.5);
+}
+
+.activities-group {
+    margin: 15px 0;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    background: rgba(45, 24, 16, 0.3);
+    border-radius: 5px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e7c491;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #af6025;
+    border-radius: 3px;
+    background: #2d2d2d;
+    cursor: pointer;
+    position: relative;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background: #af6025;
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #e7c491;
+    font-size: 14px;
+    left: 2px;
+    top: -1px;
+}
+
+.checkbox-group input[type="checkbox"]:hover {
+    border-color: #e7c491;
+}
+
+.map-details .input-group {
+    margin: 10px 0;
+}
+
+.input-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.input-left {
+    flex: 1;
+}
+
+.current-progress-details {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 5px; /* ลด margin ด้านล่าง */
+    color: #e7c7c7;
+    font-size: 1.2em;
+}
+
+.current-progress-details span {
+    padding: 5px 15px;
+}
+
+.footer {
+    margin-top: 40px;
+    padding: 20px;
+    border-top: 1px solid #af6025;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.copyright {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(175, 96, 37, 0.3);
+    font-size: 0.9em;
+    color: #af6025;
+}
+
+.donate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.donate p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.donate-button {
+    padding: 8px 20px;
+    background: linear-gradient(to bottom, #af6025, #8b4513);
+    color: #e7c491;
+    text-decoration: none;
+    border-radius: 3px;
+    border: 1px solid #e7c491;
+    transition: all 0.3s ease;
+}
+
+.donate-button:hover {
+    background: linear-gradient(to bottom, #cf7025, #af6025);
+    transform: translateY(-1px);
+}
+
+.required {
+    color: #ff6b6b;
+    margin-left: 4px;
+}
+
+/* ปรับ style สำหรับ invalid fields */
+input:invalid,
+select:invalid {
+    border-color: #ff6b6b;
+}
+
+input:invalid:focus,
+select:invalid:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+}
+
+.record-summary {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(45, 24, 16, 0.3);
+    color: #e7c491;
+    font-size: 0.95em;
+    line-height: 1.5;
+    display: none; /* ซ่อนไว้ก่อน จะแสดงเมื่อมีข้อมูล */
+}
+
+.record-summary.show {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ปรับแต่งส่วน Analysis */
+.analysis-section {
+    margin: 20px 0;
+    padding: 30px;
+    border: 1px solid #af6025;
+    border-radius: 5px;
+    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
+}
+
+.analysis-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.analysis-group {
+    background: rgba(45, 24, 16, 0.3);
+    border: 1px solid #af6025;
+    border-radius: 5px;
+    padding: 25px;
+}
+
+.analysis-group h3 {
+    color: #af6025;
+    text-align: center;
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+.analysis-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+    align-items: stretch;
+}
+
+.analysis-box {
+    background: rgba(31, 31, 31, 0.5);
+    border: 0px solid #af6025;
+    border-radius: 5px;
+    padding: 20px;
+    height: 380px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.analysis-box h4 {
+    color: #e7c491;
+    text-align: center;
+    font-size: 1.1em;
+    margin: 0 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(175, 96, 37, 0.3);
+    flex-shrink: 0;
+}
+
+/* สไตล์สำหรับกราฟแท่ง */
+.analysis-box:not(.doughnut-chart) {
+    padding: 20px 25px 60px 20px;
+}
+
+/* สไตล์สำหรับกราฟโดนัท */
+.analysis-box.doughnut-chart {
+    padding: 20px 20px 60px 20px;
+}
+
+.analysis-box canvas {
+    flex: 1;
+    min-height: 0;
+}
+
+/* ปรับแต่งสำหรับหน้าจอขนาดเล็ก */
+@media (max-width: 900px) {
+    .analysis-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-box {
+        height: 350px;
+    }
+}
+
+.version {
+    font-size: 0.5em;
+    color: #af6025;
+    vertical-align: super;
+}
