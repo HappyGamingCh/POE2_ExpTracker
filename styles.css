@@ -214,77 +214,6 @@ button:hover {
     max-width: 100%;
 }
 
-.graph-container {
-    margin: 20px 0;
-    padding: 20px;
-    border: 1px solid #af6025;
-    border-radius: 5px;
-    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
-    height: auto;
-    min-height: 500px;
-    box-shadow: 0 0 15px rgba(175, 96, 37, 0.2);
-    transition: all 0.3s ease-in-out;
-}
-
-.graph-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-    min-height: 40px; /* ความสูงขั้นต่ำเพื่อให้มีพื้นที่สำหรับปุ่ม */
-}
-
-.toggle-graph-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: #af6025;
-    font-size: 1em;
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-.toggle-graph-btn:hover {
-    color: #e7c491;
-}
-
-.toggle-graph-btn .icon {
-    display: inline-block;
-    transition: transform 0.3s ease;
-}
-
-.graph-container.collapsed {
-    min-height: auto;
-    height: auto;
-    padding-bottom: 10px;
-}
-
-.graph-container.collapsed .toggle-graph-btn .icon {
-    transform: rotate(180deg);
-}
-
-.graph-container.collapsed canvas {
-    display: none;
-}
-
-.graph-container canvas {
-    width: 100% !important;
-    height: calc(100% - 60px) !important; /* ลบความสูงของ header */
-}
-
-.graph-container.collapsed {
-    height: 100px;
-}
-
-canvas {
-    max-width: 100%;
-    height: auto !important; /* เปลี่ยนจาก fixed height เป็น auto */
-    min-height: auto !important; /* ลบ min-height คงที่ */
-}
-
 #expPercentage {
     font-size: 1.2em;
     font-weight: bold;
@@ -669,4 +598,73 @@ select:invalid:focus {
     font-size: 0.5em;
     color: #af6025;
     vertical-align: super;
+}
+
+.experience-history {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #af6025;
+    border-radius: 5px;
+    background: linear-gradient(to right, #2d1810, #462b1e);
+}
+
+.experience-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.experience-history-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.history-limit-select {
+    background: #2d2d2d;
+    color: #c7c7c7;
+    border: 1px solid #af6025;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 32px;
+    padding: 5px 25px 5px 10px;
+}
+
+.toggle-graph-btn {
+    background: transparent;
+    border: 1px solid #af6025;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    height: 32px;
+    background: #2d2d2d;
+    color: #e7c491;
+    padding: 5px 15px;
+}
+
+.toggle-graph-btn:hover {
+    background: #3d3d3d;
+}
+
+#expHistoryChart {
+    max-height: 400px;
+    transition: max-height 0.3s ease-out;
+    overflow: hidden;
+    min-height: 300px;
+    height: calc(30px * 20); /* 30px ต่อแถว x จำนวนแถวสูงสุดที่ต้องการ */
+    max-height: calc(30px * 20);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+#expHistoryChart.hidden {
+    max-height: 0;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+}
+
+#expHistoryChart canvas {
+    height: 100% !important;
 }

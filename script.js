@@ -1,12 +1,10 @@
 let previousExp = 0;
 let expHistory = [];
-let expChart = null;
-
-// กราฟวิเคราะห์
 let mapExpChart = null;
 let mapFreqChart = null;
 let activityExpChart = null;
 let activityFreqChart = null;
+let expHistoryChart = null;
 
 // เพิ่มฟังก์ชันสำหรับจัดการค่า default
 function saveDefaultValues(level, requiredExp, currentExp, name, charClass) {
@@ -34,135 +32,6 @@ function loadDefaultValues() {
 function getSelectedActivities() {
     const checkboxes = document.querySelectorAll('input[name="activity"]:checked');
     return Array.from(checkboxes).map(cb => cb.value);
-}
-
-function initChart() {
-    const ctx = document.getElementById('expChart').getContext('2d');
-    expChart = new Chart(ctx, {
-        data: {
-            labels: [],
-            datasets: [{
-                type: 'bar',
-                label: 'Experience Gained (%)',
-                data: [],
-                backgroundColor: function(context) {
-                    const value = context.dataset.data[context.dataIndex];
-                    return value < 0 ? 'rgba(255, 99, 132, 0.6)' : 'rgba(75, 192, 192, 0.6)';
-                },
-                borderColor: function(context) {
-                    const value = context.dataset.data[context.dataIndex];
-                    return value < 0 ? 'rgb(255, 99, 132)' : 'rgb(75, 192, 192)';
-                },
-                borderWidth: 1,
-                barThickness: 20,
-                order: 2,
-                xAxisID: 'x1'
-            },
-            {
-                type: 'line',
-                label: 'Current Level Progress (%)',
-                data: [],
-                borderColor: '#af6025',
-                backgroundColor: '#af6025',
-                borderWidth: 3,
-                pointRadius: 5,
-                pointBackgroundColor: '#af6025',
-                fill: false,
-                order: 1,
-                xAxisID: 'x2'
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false, // ปิดการรักษาอัตราส่วน
-            layout: {
-                padding: {
-                    top: 30,
-                    right: 15 // เพิ่ม padding ด้านขวาเพื่อให้มีพื้นที่สำหรับ scroll bar
-                }
-            },
-            scales: {
-                x1: {
-                    type: 'linear',
-                    position: 'bottom',
-                    title: {
-                        display: true,
-                        text: 'Experience Gained per Map (%)',
-                        color: '#e7c491'
-                    },
-                    grid: {
-                        drawOnChartArea: true,
-                        color: 'rgba(175, 96, 37, 0.2)'
-                    },
-                    ticks: {
-                        color: '#c7c7c7',
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
-                },
-                x2: {
-                    type: 'linear',
-                    position: 'top',
-                    min: 0,
-                    max: 100,
-                    title: {
-                        display: true,
-                        text: 'Current Level Progress (%)',
-                        color: '#e7c491'
-                    },
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    ticks: {
-                        color: '#c7c7c7',
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
-                },
-                y: {
-                    reverse: true,
-                    title: {
-                        display: true,
-                        text: 'Map Name',
-                        color: '#e7c491'
-                    },
-                    ticks: {
-                        color: '#c7c7c7'
-                    },
-                    grid: {
-                        color: 'rgba(175, 96, 37, 0.2)'
-                    },
-                    afterFit: function(scaleInstance) {
-                        // ปรับความสูงขั้นต่ำต่อข้อมูล 1 แถว
-                        scaleInstance.height = 40 * scaleInstance.chart.data.labels.length;
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#e7c491'
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const dataIndex = context.dataIndex;
-                            const entry = expHistory[expHistory.length - 1 - dataIndex];
-                            return [
-                                `${context.dataset.label}: ${context.parsed.x}%`,
-                                `Level: ${entry.mapLevel}`,
-                                `Activities: ${entry.activities.join(', ')}`
-                            ];
-                        }
-                    }
-                }
-            }
-        }
-    });
 }
 
 function initAnalysisCharts() {
@@ -338,36 +207,6 @@ function updateAnalysisCharts(expChart, freqChart, stats) {
 
 /* ...existing code... */
 
-function toggleGraphSize() {
-    const container = document.querySelector('.graph-container');
-    const button = document.querySelector('.toggle-graph-btn');
-    const buttonText = button.querySelector('span:not(.icon)');
-    const buttonIcon = button.querySelector('.icon');
-    const canvas = document.getElementById('expChart');
-    const isCollapsed = container.classList.toggle('collapsed');
-    
-    if (isCollapsed) {
-        buttonIcon.style.transform = 'rotate(180deg)';
-        buttonText.textContent = 'Show Graph';
-        canvas.style.display = 'none';
-        container.style.height = 'auto';
-    } else {
-        buttonIcon.style.transform = 'rotate(0deg)';
-        buttonText.textContent = 'Hide Graph';
-        canvas.style.display = 'block';
-        const containerHeight = Math.max(500, (expHistory.length * 40) + 100);
-        container.style.height = `${containerHeight}px`;
-        
-        // รอให้การแสดงผลเสร็จสิ้นก่อนที่จะ resize กราฟ
-        setTimeout(() => {
-            if (expChart) {
-                expChart.resize();
-                expChart.update('none');
-            }
-        }, 10);
-    }
-}
-
 function calculateTotalProgress() {
     if (expHistory.length === 0) return 0;
     const totalExp = expHistory.reduce((sum, entry) => sum + entry.expGained, 0);
@@ -379,24 +218,7 @@ function calculateCurrentProgress(currentExp, requiredExp) {
     return ((currentExp / requiredExp) * 100).toFixed(2);
 }
 
-function updateChart() {
-    const mapData = expHistory.map(entry => ({
-        name: entry.mapName || `Map ${entry.mapNumber}`,
-        percentage: entry.percentage,
-        progress: calculateCurrentProgress(entry.currentExp, entry.requiredExp)
-    }));
-
-    // คำนวณความสูงที่ต้องการและกำหนดให้กับ container
-    const containerHeight = Math.max(500, (mapData.length * 40) + 100);
-    const container = expChart.canvas.parentNode;
-    container.style.height = `${containerHeight}px`;
-
-    // อัพเดทข้อมูลกราฟ
-    expChart.data.labels = mapData.map(d => d.name);
-    expChart.data.datasets[0].data = mapData.map(d => d.percentage);
-    expChart.data.datasets[1].data = mapData.map(d => d.progress);
-    expChart.update('none');
-}
+/* ...existing code... */
 
 function updateProgressBar(percentage) {
     const progressBar = document.getElementById('progressBar');
@@ -473,7 +295,6 @@ function recordExperience() {
     updateProgressBar(currentProgress);
 
     updateDisplay(expGained, expPercentage, requiredExp, mapName, activities);
-    updateChart();
     saveToLocalStorage();
     previousExp = currentExp;
 
@@ -491,6 +312,7 @@ function recordExperience() {
     summaryElement.classList.add('show');
 
     updateAnalysis();
+    updateExpHistoryChart();
 }
 
 function calculateExpPercentage(level, expGained) {
@@ -530,12 +352,12 @@ function loadFromLocalStorage() {
     const saved = localStorage.getItem('expHistory');
     if (saved) {
         expHistory = JSON.parse(saved);
+        
+        // Reset UI elements
         document.getElementById('expHistory').innerHTML = '';
         
-        // เรียงลำดับข้อมูลจากใหม่ไปเก่า
+        // Update history list
         [...expHistory].reverse().forEach((entry) => {
-            const currentProgress = calculateCurrentProgress(entry.currentExp, entry.requiredExp);
-            
             const historyList = document.getElementById('expHistory');
             const listItem = document.createElement('li');
             listItem.innerHTML = `
@@ -545,7 +367,7 @@ function loadFromLocalStorage() {
             historyList.appendChild(listItem);
         });
 
-        // อัพเดท current progress และ progress bar จากข้อมูลล่าสุด
+        // Update current progress if there are entries
         if (expHistory.length > 0) {
             const lastEntry = expHistory[expHistory.length - 1];
             const currentProgress = calculateCurrentProgress(
@@ -553,24 +375,27 @@ function loadFromLocalStorage() {
                 lastEntry.requiredExp
             );
             
-            // อัพเดท progress display ด้วยข้อมูลจาก localStorage
-            const charName = localStorage.getItem('defaultCharName') || 'Unknown';
-            const charClass = localStorage.getItem('defaultCharClass') || 'Unknown';
-            updateProgressDisplay(currentProgress, lastEntry.level, charClass, charName);
-            updateProgressBar(currentProgress);
-            
-            // อัพเดทค่า inputs
+            // Update form with last entry data
             document.getElementById('currentLevel').value = lastEntry.level;
             document.getElementById('requiredExp').value = lastEntry.requiredExp;
             document.getElementById('currentExp').value = lastEntry.currentExp;
             previousExp = lastEntry.currentExp;
+
+            // Update displays
+            updateProgressDisplay(
+                currentProgress,
+                lastEntry.level,
+                localStorage.getItem('defaultCharClass') || 'Unknown',
+                localStorage.getItem('defaultCharName') || 'Unknown'
+            );
+            updateProgressBar(currentProgress);
         }
 
-        updateChart();
-    }
-
-    if (expHistory.length > 0) {
-        updateAnalysis();
+        // Update all charts
+        if (expHistory.length > 0) {
+            updateAnalysis();
+            updateExpHistoryChart();
+        }
     }
 }
 
@@ -580,20 +405,14 @@ function clearAllData() {
         previousExp = 0;
         expHistory = [];
         
-        localStorage.removeItem('expHistory');
-        localStorage.removeItem('defaultLevel');
-        localStorage.removeItem('defaultRequiredExp');
-        localStorage.removeItem('defaultCurrentExp');
-        localStorage.removeItem('defaultCharName');
-        localStorage.removeItem('defaultCharClass');
+        // Clear localStorage
+        localStorage.clear();
         
-        // Clear display elements
+        // Reset all UI elements and charts
         document.getElementById('expGained').textContent = '';
         document.getElementById('expPercentage').textContent = '';
         document.getElementById('expHistory').innerHTML = '';
         document.getElementById('currentProgress').innerHTML = '';
-        
-        // Clear form inputs
         document.getElementById('currentLevel').value = '';
         document.getElementById('requiredExp').value = '';
         document.getElementById('currentExp').value = '';
@@ -602,31 +421,17 @@ function clearAllData() {
         document.getElementById('mapLevel').value = '';
         document.getElementById('mapName').value = '';
         
-        // Reset charts
-        expChart.data.labels = [];
-        expChart.data.datasets[0].data = [];
-        expChart.data.datasets[1].data = [];
-        expChart.update();
-
-        mapExpChart.data.labels = [];
-        mapExpChart.data.datasets[0].data = [];
-        mapExpChart.update();
-
-        mapFreqChart.data.labels = [];
-        mapFreqChart.data.datasets[0].data = [];
-        mapFreqChart.update();
-
-        activityExpChart.data.labels = [];
-        activityExpChart.data.datasets[0].data = [];
-        activityExpChart.update();
-
-        activityFreqChart.data.labels = [];
-        activityFreqChart.data.datasets[0].data = [];
-        activityFreqChart.update();
-
         // Reset progress bar
         updateProgressBar(0);
-
+        
+        // Reset all charts
+        if (expHistoryChart) {
+            expHistoryChart.destroy();
+            initExpHistoryChart();
+        }
+        
+        // ... existing chart resets ...
+        
         // Clear summary
         const summaryElement = document.getElementById('recordSummary');
         summaryElement.innerHTML = '';
@@ -636,8 +441,180 @@ function clearAllData() {
 
 // เพิ่มการเริ่มต้นกราฟวิเคราะห์
 document.addEventListener('DOMContentLoaded', () => {
-    initChart();
     initAnalysisCharts();
+    initExpHistoryChart();
     loadDefaultValues();
     loadFromLocalStorage();
 });
+
+function initExpHistoryChart() {
+    const canvas = document.querySelector('#expHistoryChart canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (expHistoryChart) {
+        expHistoryChart.destroy();
+    }
+
+    expHistoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Experience Gained (%)',
+                    data: [],
+                    backgroundColor: 'rgba(175, 96, 37, 0.6)',
+                    borderColor: '#af6025',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    barThickness: 20,
+                    order: 1
+                },
+                {
+                    label: 'Level Progress (%)',
+                    data: [],
+                    type: 'line',
+                    borderColor: '#e7c491',
+                    borderWidth: 2,
+                    yAxisID: 'y',
+                    fill: false,
+                    tension: 0.4,
+                    order: 0
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    right: 20
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(175, 96, 37, 0.2)'
+                    },
+                    ticks: {
+                        color: '#e7c491'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(175, 96, 37, 0.2)'
+                    },
+                    ticks: {
+                        color: '#e7c491',
+                        padding: 10
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'y',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    mode: 'nearest',
+                    callbacks: {
+                        beforeTitle: function(tooltipItems) {
+                            return 'Map Details:';
+                        },
+                        title: function(tooltipItems) {
+                            const dataIndex = tooltipItems[0].dataIndex;
+                            const entries = [...expHistory].reverse();
+                            const limit = document.getElementById('historyLimit').value;
+                            const limitedEntries = limit === 'all' ? entries : entries.slice(0, parseInt(limit));
+                            const entry = limitedEntries[dataIndex];
+                            if (!entry) return '';
+                            // แก้ไขรูปแบบการแสดงชื่อแมพและเลเวล
+                            return entry.mapLevel ? `${entry.mapName} (${entry.mapLevel})` : entry.mapName;
+                        },
+                        afterTitle: function(tooltipItems) {
+                            const dataIndex = tooltipItems[0].dataIndex;
+                            const entries = [...expHistory].reverse();
+                            const limit = document.getElementById('historyLimit').value;
+                            const limitedEntries = limit === 'all' ? entries : entries.slice(0, parseInt(limit));
+                            const entry = limitedEntries[dataIndex];
+                            if (!entry || !entry.activities) return '';
+                            return `Activities: ${entry.activities.join(', ') || 'None'}`;
+                        },
+                        label: function(context) {
+                            const dataIndex = context.dataIndex;
+                            const entries = [...expHistory].reverse();
+                            const limit = document.getElementById('historyLimit').value;
+                            const limitedEntries = limit === 'all' ? entries : entries.slice(0, parseInt(limit));
+                            const entry = limitedEntries[dataIndex];
+                            
+                            if (context.datasetIndex === 0) {  // Experience Gained bar
+                                return `Experience: ${entry.expGained.toLocaleString()} (${entry.percentage}%)`;
+                            } else {  // Level Progress line
+                                return `Level Progress: ${context.parsed.x.toFixed(2)}%`;
+                            }
+                        }
+                    },
+                    backgroundColor: 'rgba(45, 24, 16, 0.9)',
+                    titleColor: '#e7c491',
+                    bodyColor: '#c7c7c7',
+                    borderColor: '#af6025',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false
+                },
+                legend: {
+                    labels: {
+                        color: '#e7c491',
+                        padding: 10
+                    }
+                }
+            }
+        }
+    });
+
+    // Add event listeners
+    document.getElementById('historyLimit').addEventListener('change', updateExpHistoryChart);
+    document.getElementById('toggleGraphBtn').addEventListener('click', toggleExpHistoryGraph);
+
+    if (expHistory.length > 0) {
+        updateExpHistoryChart();
+    }
+}
+
+function updateExpHistoryChart() {
+    if (!expHistoryChart) return;
+
+    const limit = document.getElementById('historyLimit').value;
+    const entries = [...expHistory].reverse();
+    const limitedEntries = limit === 'all' ? entries : entries.slice(0, parseInt(limit));
+
+    // แก้ไขรูปแบบการแสดงชื่อแมพและเลเวล
+    expHistoryChart.data.labels = limitedEntries.map(entry => 
+        entry.mapLevel ? `${entry.mapName} (${entry.mapLevel})` : entry.mapName
+    );
+
+    // อัพเดทข้อมูลกราฟ
+    expHistoryChart.data.datasets[0].data = limitedEntries.map(entry => parseFloat(entry.percentage));
+    expHistoryChart.data.datasets[1].data = limitedEntries.map(entry => 
+        calculateCurrentProgress(entry.currentExp, entry.requiredExp)
+    );
+
+    // ปรับความสูงของ container ตามจำนวนข้อมูล
+    const container = document.getElementById('expHistoryChart');
+    const rowHeight = 30; // ความสูงต่อแถว
+    const minHeight = 300; // ความสูงขั้นต่ำ
+    const totalHeight = Math.max(minHeight, rowHeight * limitedEntries.length + 100); // +100 for padding and legend
+    container.style.height = `${totalHeight}px`;
+
+    expHistoryChart.update();
+}
+
+function toggleExpHistoryGraph() {
+    const btn = document.getElementById('toggleGraphBtn');
+    const chart = document.getElementById('expHistoryChart');
+    const isHidden = chart.classList.toggle('hidden');
+    btn.textContent = isHidden ? 'Show Graph' : 'Hide Graph';
+}

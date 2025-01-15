@@ -91,16 +91,25 @@
             <h2>History</h2>
             <ul id="expHistory"></ul>
         </div>
-        <div class="graph-container">
-            <div class="graph-header">
-                <h2>Experience History</h2>
-                <button class="toggle-graph-btn" onclick="toggleGraphSize()">
-                    <span>Hide Graph</span>
-                    <span class="icon">⌃</span>
-                </button>
+        
+        <div class="experience-history">
+            <div class="experience-history-header">
+                <h2>Experience History Graph</h2>
+                <div class="experience-history-controls">
+                    <select class="history-limit-select" id="historyLimit">
+                        <option value="5">Last 5 entries</option>
+                        <option value="10">Last 10 entries</option>
+                        <option value="20">Last 20 entries</option>
+                        <option value="all">All entries</option>
+                    </select>
+                    <button class="toggle-graph-btn" id="toggleGraphBtn">Hide Graph</button>
+                </div>
             </div>
-            <canvas id="expChart"></canvas>
+            <div id="expHistoryChart">
+                <canvas></canvas>
+            </div>
         </div>
+        
         <div class="analysis-section">
             <h2>Analysis</h2>
             <div class="analysis-container">
