@@ -354,11 +354,13 @@ h1, h2 {
 
 .checkbox-group {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: repeat(5, 1fr); /* 5 columns */
+    grid-template-rows: repeat(2, 1fr);    /* 2 rows */
+    gap: 12px;
+    padding: 15px;
     background: rgba(45, 24, 16, 0.3);
     border-radius: 5px;
+    margin-top: 8px;
 }
 
 .checkbox-group label {
@@ -367,6 +369,15 @@ h1, h2 {
     gap: 8px;
     color: #e7c491;
     cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    justify-content: flex-start;
+}
+
+.checkbox-group label:hover {
+    background: rgba(175, 96, 37, 0.2);
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -508,89 +519,58 @@ select:invalid:focus {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ปรับแต่งส่วน Analysis */
+/* Analysis Section Styling */
 .analysis-section {
     margin: 20px 0;
-    padding: 30px;
+    padding: 15px;
     border: 1px solid #af6025;
     border-radius: 5px;
-    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
-}
-
-.analysis-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    background: linear-gradient(to right, #2d1810, #462b1e);
 }
 
 .analysis-group {
-    background: rgba(45, 24, 16, 0.3);
-    border: 1px solid #af6025;
-    border-radius: 5px;
-    padding: 25px;
+    margin-bottom: 20px;
 }
 
 .analysis-group h3 {
     color: #af6025;
-    text-align: center;
-    font-size: 1.4em;
-    margin-bottom: 25px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    font-weight: bold;
+    font-size: 1.2em;
+    padding: 10px;
+    margin: 0;
 }
 
 .analysis-charts {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 20px;
-    align-items: stretch;
+    gap: 0;
+    padding: 20px;
 }
 
 .analysis-box {
-    background: rgba(31, 31, 31, 0.5);
-    border: 0px solid #af6025;
-    border-radius: 5px;
-    padding: 20px;
-    height: 380px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    align-items: center;
 }
 
 .analysis-box h4 {
-    color: #e7c491;
+    color: #af6025;
     text-align: center;
-    font-size: 1.1em;
-    margin: 0 0 20px 0;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(175, 96, 37, 0.3);
-    flex-shrink: 0;
+    font-size: 1em;
+    margin: 0 0 15px 0;
+    font-weight: normal;
 }
 
-/* สไตล์สำหรับกราฟแท่ง */
-.analysis-box:not(.doughnut-chart) {
-    padding: 20px 25px 60px 20px;
-}
-
-/* สไตล์สำหรับกราฟโดนัท */
-.analysis-box.doughnut-chart {
-    padding: 20px 20px 60px 20px;
-}
-
+/* ปรับขนาดและตำแหน่งของ canvas */
 .analysis-box canvas {
-    flex: 1;
-    min-height: 0;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px;
 }
 
 /* ปรับแต่งสำหรับหน้าจอขนาดเล็ก */
 @media (max-width: 900px) {
     .analysis-charts {
         grid-template-columns: 1fr;
-    }
-    
-    .analysis-box {
-        height: 350px;
     }
 }
 
@@ -667,4 +647,132 @@ select:invalid:focus {
 
 #expHistoryChart canvas {
     height: 100% !important;
+}
+
+.analysis-summary {
+    background: rgba(45, 24, 16, 0.3);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(175, 96, 37, 0.3);
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(175, 96, 37, 0.3);
+}
+
+.summary-header h3 {
+    color: #e7c491;
+    margin: 0;
+    font-size: 1.3em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.summary-item {
+    padding: 15px;
+    background: rgba(45, 24, 16, 0.4);
+    border: 1px solid rgba(175, 96, 37, 0.2);
+    border-radius: 4px;
+}
+
+.summary-label {
+    display: block;
+    color: #e7c491;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-item span:not(.summary-label) {
+    color: #af6025;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.summary-item div {
+    color: #af6025;
+    margin-top: 8px;
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+
+/* Modal styles */
+.share-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.share-modal.active {
+    display: flex;
+}
+
+.share-modal-content {
+    background: #1a1410;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #af6025;
+    position: relative;
+    max-width: 400px;
+    width: 90%;
+}
+
+.share-modal-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 3px;
+}
+
+.share-modal-close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #e7c491;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.share-modal-close:hover {
+    color: #af6025;
+}
+
+#shareButton {
+    padding: 6px 12px;
+    background: linear-gradient(to bottom, #af6025, #8b4513);
+    color: #e7c491;
+    border: 1px solid #e7c491;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#shareButton:hover {
+    background: linear-gradient(to bottom, #cf7025, #af6025);
 }

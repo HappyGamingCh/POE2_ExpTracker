@@ -6,10 +6,11 @@
     <title>PoE2 Experience Tracker v0.1</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Path of Exile 2 Experience Tracker <span class="version">v0.1</span></h1>
+        <h1>Path of Exile 2 Experience Tracker</h1>
         <div class="current-progress">
             <h2>Current Progress</h2>
             <p id="currentProgress"></p>
@@ -25,10 +26,19 @@
                 </div>
                 <div class="input-group">
                     <label for="characterClass">Character Class:</label>
-                    <select id="characterClass">
-                        <option value="X">Class X</option>
-                        <option value="Y">Class Y</option>
-                        <option value="Z">Class Z</option>
+                    <select name="characterClass" id="characterClass">
+                        <option value="witch-hunter">Witch Hunter</option>
+                        <option value="gemling">Gemling</option>
+                        <option value="invoker">Invoker</option>
+                        <option value="acolyte">Acolyte</option>
+                        <option value="deadeye">Deadeye</option>
+                        <option value="pathfinder">Pathfinder</option>
+                        <option value="stormweaver">Stormweaver</option>
+                        <option value="chronomancer">Chronomancer</option>
+                        <option value="warbringer">Warbringer</option>
+                        <option value="titan">Titan</option>
+                        <option value="infernalist">Infernalist</option>
+                        <option value="blood-mage">Blood Mage</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -52,9 +62,44 @@
                         <label for="mapName">Map Name: <span class="required">*</span></label>
                         <select id="mapName" required>
                             <option value="">Select Map</option>
-                            <option value="A">Map A</option>
-                            <option value="B">Map B</option>
-                            <option value="C">Map C</option>
+                            <option value="Abyss">Abyss</option>
+                            <option value="Alpine Ridge">Alpine Ridge</option>
+                            <option value="Augury">Augury</option>
+                            <option value="Backwash">Backwash</option>
+                            <option value="Blooming Field">Blooming Field</option>
+                            <option value="Bluff">Bluff</option>
+                            <option value="Burial Bog">Burial Bog</option>
+                            <option value="Centotes">Centotes</option>
+                            <option value="Creek">Creek</option>
+                            <option value="Crimson Shores">Crimson Shores</option>
+                            <option value="Crypt">Crypt</option>
+                            <option value="Decay">Decay</option>
+                            <option value="Deserted">Deserted</option>
+                            <option value="Forge">Forge</option>
+                            <option value="Fortress">Fortress</option>
+                            <option value="Gothic City">Gothic City</option>
+                            <option value="Hidden Grotto">Hidden Grotto</option>
+                            <option value="Hive">Hive</option>
+                            <option value="Lost Towers">Lost Towers</option>
+                            <option value="Mesa">Mesa</option>
+                            <option value="Mire">Mire</option>
+                            <option value="Oasis">Oasis</option>
+                            <option value="Penitentiary">Penitentiary</option>
+                            <option value="Riverside">Riverside</option>
+                            <option value="Rustbowl">Rustbowl</option>
+                            <option value="Sandspit">Sandspit</option>
+                            <option value="Savannah">Savannah</option>
+                            <option value="Seepage">Seepage</option>
+                            <option value="Sinking Spire">Sinking Spire</option>
+                            <option value="Spider Woods">Spider Woods</option>
+                            <option value="Steaming Springs">Steaming Springs</option>
+                            <option value="Steppe">Steppe</option>
+                            <option value="Sulphuric Caverns">Sulphuric Caverns</option>
+                            <option value="Sump">Sump</option>
+                            <option value="Vaal Factory">Vaal Factory</option>
+                            <option value="Vaal Foundry">Vaal Foundry</option>
+                            <option value="Willow">Willow</option>
+                            <option value="Woodland">Woodland</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -65,13 +110,16 @@
                 <div class="activities-group">
                     <label>Map Activities:</label>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" name="activity" value="breach"> Breach</label>
-                        <label><input type="checkbox" name="activity" value="delirium"> Delirium</label>
-                        <label><input type="checkbox" name="activity" value="boss"> Boss</label>
-                        <label><input type="checkbox" name="activity" value="ritual"> Ritual</label>
-                        <label><input type="checkbox" name="activity" value="unique"> Unique</label>
-                        <label><input type="checkbox" name="activity" value="expedition"> Expedition</label>
-                        <label><input type="checkbox" name="activity" value="hideout"> Hideout</label>
+                        <label><input type="checkbox" name="activity" value="Breach"> Breach</label>
+                        <label><input type="checkbox" name="activity" value="Corruption"> Corruption</label>
+                        <label><input type="checkbox" name="activity" value="Delirium"> Delirium</label>
+                        <label><input type="checkbox" name="activity" value="Expedition"> Expedition</label>
+                        <label><input type="checkbox" name="activity" value="Hideout"> Hideout</label>
+                        <label><input type="checkbox" name="activity" value="Irradiated"> Irradiated</label>
+                        <label><input type="checkbox" name="activity" value="Map Boss"> Map Boss</label>
+                        <label><input type="checkbox" name="activity" value="Ritual"> Ritual</label>
+                        <label><input type="checkbox" name="activity" value="Unique Map"> Unique Map</label>
+                        <label><input type="checkbox" name="activity" value="Wandering Trader"> Wandering Trader</label>
                     </div>
                 </div>
             </div>
@@ -112,6 +160,33 @@
         
         <div class="analysis-section">
             <h2>Analysis</h2>
+            <div class="analysis-summary">
+                <div class="summary-header">
+                    <h3>Summary</h3>
+                    <button id="shareButton" onclick="shareAnalysis()">
+                        <i class="fas fa-share-alt"></i>
+                        Share
+                    </button>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-label">Average EXP per Map:</span>
+                        <span id="avgExpPerMap">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Maps to Next Level:</span>
+                        <span id="mapsToLevel">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Best Maps for EXP:</span>
+                        <div id="bestMaps">-</div>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Best Activities for EXP:</span>
+                        <div id="bestActivities">-</div>
+                    </div>
+                </div>
+            </div>
             <div class="analysis-container">
                 <div class="analysis-group">
                     <h3>Map Analysis</h3>
@@ -150,6 +225,12 @@
                 © 2024 PoE2 Experience Tracker. All rights reserved.
             </div>
         </footer>
+    </div>
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-content">
+            <button class="share-modal-close" onclick="closeShareModal()">×</button>
+            <img id="shareImage" alt="Analysis Share Image">
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
