@@ -87,8 +87,8 @@ body {
 
 .map-input-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 2fr;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
@@ -225,13 +225,11 @@ button:hover {
 }
 
 .current-progress {
-    background: linear-gradient(to right, #2d1810, #462b1e);
-    padding: 15px 20px; /* ลด padding ด้านบนล่าง */
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
     border-radius: 5px;
     border: 1px solid #af6025;
-    margin: 20px 0;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(175, 96, 37, 0.3);
 }
 
 #currentProgress {
@@ -425,15 +423,40 @@ h1, h2 {
 
 .current-progress-details {
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 5px; /* ลด margin ด้านล่าง */
-    color: #e7c7c7;
-    font-size: 1.2em;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.current-progress-details span {
-    padding: 5px 15px;
+.character-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.character-info span {
+    color: #e7c491;
+    font-size: 1.1em;
+}
+
+.character-info span:first-child {
+    font-size: 1.3em;
+    color: #af6025;
+    font-weight: bold;
+}
+
+.character-portrait {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #af6025;
+}
+
+.character-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .footer {
@@ -463,22 +486,25 @@ h1, h2 {
 
 .donate p {
     margin: 0;
-    font-size: 0.9em;
+    font-size: 0.95em;
+    color: #e7c491;
 }
 
 .donate-button {
     padding: 8px 20px;
-    background: linear-gradient(to bottom, #af6025, #8b4513);
-    color: #e7c491;
+    background: linear-gradient(to bottom, #c4302b, #8b0000);
+    color: #ffffff;
     text-decoration: none;
     border-radius: 3px;
-    border: 1px solid #e7c491;
+    border: none;
     transition: all 0.3s ease;
+    font-weight: bold;
 }
 
 .donate-button:hover {
-    background: linear-gradient(to bottom, #cf7025, #af6025);
+    background: linear-gradient(to bottom, #e62117, #c4302b);
     transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .required {
@@ -733,7 +759,7 @@ select:invalid:focus {
     border-radius: 5px;
     border: 1px solid #af6025;
     position: relative;
-    max-width: 400px;
+    max-width: 500px;
     width: 90%;
 }
 
@@ -775,4 +801,103 @@ select:invalid:focus {
 
 #shareButton:hover {
     background: linear-gradient(to bottom, #cf7025, #af6025);
+}
+
+/* เพิ่ม style ใหม่เพื่อซ่อน section results */
+.results {
+    display: none;  /* ซ่อน section */
+}
+
+#mapType {
+    width: 100%;
+    padding: 8px;
+    background: #2d2d2d;
+    border: 1px solid #af6025;
+    color: #c7c7c7;
+    border-radius: 3px;
+}
+
+#mapType:focus {
+    outline: none;
+    border-color: #e7c491;
+    box-shadow: 0 0 5px rgba(175, 96, 37, 0.5);
+}
+
+/* ซ่อน options ที่ถูก filter ออก */
+#mapName option[style*="display: none"] {
+    display: none;
+}
+
+/* เพิ่ม style สำหรับ map type filter */
+.map-type-filter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.map-type-filter .checkbox-group {
+    display: flex;
+    gap: 12px;
+}
+
+.map-type-filter label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #e7c491;
+    font-size: 0.9em;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: color 0.2s;
+}
+
+.map-type-filter label:hover {
+    color: #af6025;
+}
+
+.map-type-filter input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* แก้ไข style สำหรับ map details header และ filter */
+.map-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.map-details-header h3 {
+    margin: 0;
+}
+
+.map-type-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85em;
+}
+
+.map-type-filter .checkbox-group {
+    display: flex;
+    gap: 10px;
+}
+
+.map-type-filter label {
+    color: #e7c491;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.map-type-filter input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
 }

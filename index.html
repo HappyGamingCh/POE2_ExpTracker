@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PoE2 Experience Tracker v0.1</title>
+    <title>PoE2 Experience Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -12,7 +12,6 @@
     <div class="container">
         <h1>Path of Exile 2 Experience Tracker</h1>
         <div class="current-progress">
-            <h2>Current Progress</h2>
             <p id="currentProgress"></p>
             <div class="progress-bar-container">
                 <div id="progressBar" class="progress-bar"></div>
@@ -27,18 +26,18 @@
                 <div class="input-group">
                     <label for="characterClass">Character Class:</label>
                     <select name="characterClass" id="characterClass">
-                        <option value="witch-hunter">Witch Hunter</option>
-                        <option value="gemling">Gemling</option>
-                        <option value="invoker">Invoker</option>
-                        <option value="acolyte">Acolyte</option>
-                        <option value="deadeye">Deadeye</option>
-                        <option value="pathfinder">Pathfinder</option>
-                        <option value="stormweaver">Stormweaver</option>
-                        <option value="chronomancer">Chronomancer</option>
-                        <option value="warbringer">Warbringer</option>
-                        <option value="titan">Titan</option>
-                        <option value="infernalist">Infernalist</option>
-                        <option value="blood-mage">Blood Mage</option>
+                        <option value="Witch Hunter">Witch Hunter</option>
+                        <option value="Gemling">Gemling</option>
+                        <option value="Invoker">Invoker</option>
+                        <option value="Acolyte">Acolyte</option>
+                        <option value="Deadeye">Deadeye</option>
+                        <option value="Pathfinder">Pathfinder</option>
+                        <option value="Stormweaver">Stormweaver</option>
+                        <option value="Chronomancer">Chronomancer</option>
+                        <option value="Warbringer">Warbringer</option>
+                        <option value="Titan">Titan</option>
+                        <option value="Infernalist">Infernalist</option>
+                        <option value="Blood-Mage">Blood Mage</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -47,59 +46,77 @@
                 </div>
                 <div class="input-group">
                     <label for="requiredExp">Required EXP for Level: <span class="required">*</span></label>
-                    <input type="number" id="requiredExp" placeholder="Required Exp for Level" required>
+                    <input type="number" id="requiredExp" step="0.01" placeholder="Required Exp for Level" required>
                 </div>
                 <div class="input-group">
                     <label for="currentExp">Current Total EXP: <span class="required">*</span></label>
-                    <input type="number" id="currentExp" placeholder="Current Experience" required>
+                    <input type="number" id="currentExp" step="0.01" placeholder="Current Experience" required>
                 </div>
             </div>
 
             <div class="map-details">
-                <h3>Map Details</h3>
+                <div class="map-details-header">
+                    <h3>Map Details</h3>
+                    <div class="map-type-filter">
+                        <label>Filter:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="mapType" value="General" checked> General</label>
+                            <label><input type="checkbox" name="mapType" value="Tower" checked> Tower</label>
+                            <label><input type="checkbox" name="mapType" value="Hideout" checked> Hideout</label>
+                            <label><input type="checkbox" name="mapType" value="Citadel" checked> Citadel</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="map-input-row">
                     <div class="input-group">
                         <label for="mapName">Map Name: <span class="required">*</span></label>
                         <select id="mapName" required>
-                            <option value="">Select Map</option>
-                            <option value="Abyss">Abyss</option>
-                            <option value="Alpine Ridge">Alpine Ridge</option>
-                            <option value="Augury">Augury</option>
-                            <option value="Backwash">Backwash</option>
-                            <option value="Blooming Field">Blooming Field</option>
-                            <option value="Bluff">Bluff</option>
-                            <option value="Burial Bog">Burial Bog</option>
-                            <option value="Centotes">Centotes</option>
-                            <option value="Creek">Creek</option>
-                            <option value="Crimson Shores">Crimson Shores</option>
-                            <option value="Crypt">Crypt</option>
-                            <option value="Decay">Decay</option>
-                            <option value="Deserted">Deserted</option>
-                            <option value="Forge">Forge</option>
-                            <option value="Fortress">Fortress</option>
-                            <option value="Gothic City">Gothic City</option>
-                            <option value="Hidden Grotto">Hidden Grotto</option>
-                            <option value="Hive">Hive</option>
-                            <option value="Lost Towers">Lost Towers</option>
-                            <option value="Mesa">Mesa</option>
-                            <option value="Mire">Mire</option>
-                            <option value="Oasis">Oasis</option>
-                            <option value="Penitentiary">Penitentiary</option>
-                            <option value="Riverside">Riverside</option>
-                            <option value="Rustbowl">Rustbowl</option>
-                            <option value="Sandspit">Sandspit</option>
-                            <option value="Savannah">Savannah</option>
-                            <option value="Seepage">Seepage</option>
-                            <option value="Sinking Spire">Sinking Spire</option>
-                            <option value="Spider Woods">Spider Woods</option>
-                            <option value="Steaming Springs">Steaming Springs</option>
-                            <option value="Steppe">Steppe</option>
-                            <option value="Sulphuric Caverns">Sulphuric Caverns</option>
-                            <option value="Sump">Sump</option>
-                            <option value="Vaal Factory">Vaal Factory</option>
-                            <option value="Vaal Foundry">Vaal Foundry</option>
-                            <option value="Willow">Willow</option>
-                            <option value="Woodland">Woodland</option>
+                            <option value="Abyss" data-type="General">Abyss</option>
+                            <option value="Alpine Ridge" data-type="Tower">Alpine Ridge</option>
+                            <option value="Augury" data-type="General">Augury</option>
+                            <option value="Backwash" data-type="General">Backwash</option>
+                            <option value="Blooming Field" data-type="General">Blooming Field</option>
+                            <option value="Bluff" data-type="Tower">Bluff</option>
+                            <option value="Burial Bog" data-type="General">Burial Bog</option>
+                            <option value="Canal Hideout" data-type="Hideout">Canal Hideout</option>
+                            <option value="Centotes" data-type="General">Centotes</option>
+                            <option value="Copper Citadel" data-type="Citadel">Copper Citadel</option>
+                            <option value="Creek" data-type="General">Creek</option>
+                            <option value="Crimson Shores" data-type="General">Crimson Shores</option>
+                            <option value="Crypt" data-type="General">Crypt</option>
+                            <option value="Decay" data-type="General">Decay</option>
+                            <option value="Deserted" data-type="General">Deserted</option>
+                            <option value="Felled Hideout" data-type="Hideout">Felled Hideout</option>
+                            <option value="Forge" data-type="General">Forge</option>
+                            <option value="Fortress" data-type="General">Fortress</option>
+                            <option value="Gothic City" data-type="General">Gothic City</option>
+                            <option value="Hidden Grotto" data-type="General">Hidden Grotto</option>
+                            <option value="Hive" data-type="General">Hive</option>
+                            <option value="Iron Citadel" data-type="Citadel">Iron Citadel</option>
+                            <option value="Limestone Hideout" data-type="Hideout">Limestone Hideout</option>
+                            <option value="Lost Towers" data-type="Tower">Lost Towers</option>
+                            <option value="Mesa" data-type="Tower">Mesa</option>
+                            <option value="Mire" data-type="General">Mire</option>
+                            <option value="Oasis" data-type="General">Oasis</option>
+                            <option value="Penitentiary" data-type="General">Penitentiary</option>
+                            <option value="Riverside" data-type="General">Riverside</option>
+                            <option value="Rustbowl" data-type="General">Rustbowl</option>
+                            <option value="Sandspit" data-type="General">Sandspit</option>
+                            <option value="Savannah" data-type="General">Savannah</option>
+                            <option value="Seepage" data-type="General">Seepage</option>
+                            <option value="Shrine Hideout" data-type="Hideout">Shrine Hideout</option>
+                            <option value="Sinking Spire" data-type="Tower">Sinking Spire</option>
+                            <option value="Spider Woods" data-type="General">Spider Woods</option>
+                            <option value="Steaming Springs" data-type="General">Steaming Springs</option>
+                            <option value="Steppe" data-type="General">Steppe</option>
+                            <option value="Stone Citadel" data-type="Citadel">Stone Citadel</option>
+                            <option value="Sulphuric Caverns" data-type="General">Sulphuric Caverns</option>
+                            <option value="Sump" data-type="General">Sump</option>
+                            <option value="The Burning Monolith" data-type="Citadel">The Burning Monolith</option>
+                            <option value="Vaal Factory" data-type="General">Vaal Factory</option>
+                            <option value="Vaal Foundry" data-type="General">Vaal Foundry</option>
+                            <option value="Willow" data-type="General">Willow</option>
+                            <option value="Woodland" data-type="General">Woodland</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -129,11 +146,6 @@
                 <button onclick="clearAllData()" class="clear-btn">Clear All Data</button>
             </div>
             <div id="recordSummary" class="record-summary"></div>
-        </div>
-        <div class="results">
-            <h2>Latest Map Results</h2>
-            <p id="expGained"></p>
-            <p id="expPercentage"></p>
         </div>
         <div class="history">
             <h2>History</h2>
@@ -218,8 +230,8 @@
         </div>
         <footer class="footer">
             <div class="donate">
-                <p>Support this project</p>
-                <a href="#" class="donate-button">Donate</a>
+                <p>Support this project simply by subscribing to my YouTube channel. Thank you!</p>
+                <a href="https://www.youtube.com/@pednoi55?sub_confirmation=1" class="donate-button" target="_blank">Subscribe</a>
             </div>
             <div class="copyright">
                 © 2024 PoE2 Experience Tracker. All rights reserved.

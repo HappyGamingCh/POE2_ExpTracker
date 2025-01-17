@@ -6,13 +6,22 @@ let activityExpChart = null;
 let activityFreqChart = null;
 let expHistoryChart = null;
 
+// เพิ่มตัวแปร object สำหรับเก็บ URL รูปภาพของแต่ละ class
+const characterImages = {
+    'Witch Hunter': 'https://img.game8.co/4052791/ebef870a91cef16c9d900c81d8f243e5.png/show',
+    'Invoker': 'https://img.game8.co/4052796/579ad47527c6654fe07091ed110a0ed2.png/show',
+    // เพิ่ม class อื่นๆ ตามต้องการ
+};
+
 // เพิ่มฟังก์ชันสำหรับจัดการค่า default
-function saveDefaultValues(level, requiredExp, currentExp, name, charClass) {
+function saveDefaultValues(level, requiredExp, currentExp, name, charClass, mapName, mapLevel) {
     localStorage.setItem('defaultLevel', level);
     localStorage.setItem('defaultRequiredExp', requiredExp);
     localStorage.setItem('defaultCurrentExp', currentExp);
     localStorage.setItem('defaultCharName', name);
     localStorage.setItem('defaultCharClass', charClass);
+    localStorage.setItem('defaultMapName', mapName);
+    localStorage.setItem('defaultMapLevel', mapLevel);
 }
 
 function loadDefaultValues() {
@@ -21,12 +30,16 @@ function loadDefaultValues() {
     const defaultCurrentExp = localStorage.getItem('defaultCurrentExp');
     const defaultCharName = localStorage.getItem('defaultCharName');
     const defaultCharClass = localStorage.getItem('defaultCharClass');
+    const defaultMapName = localStorage.getItem('defaultMapName');
+    const defaultMapLevel = localStorage.getItem('defaultMapLevel');
     
     if (defaultLevel) document.getElementById('currentLevel').value = defaultLevel;
     if (defaultRequiredExp) document.getElementById('requiredExp').value = defaultRequiredExp;
     if (defaultCurrentExp) document.getElementById('currentExp').value = defaultCurrentExp;
     if (defaultCharName) document.getElementById('characterName').value = defaultCharName;
     if (defaultCharClass) document.getElementById('characterClass').value = defaultCharClass;
+    if (defaultMapName) document.getElementById('mapName').value = defaultMapName;
+    if (defaultMapLevel) document.getElementById('mapLevel').value = defaultMapLevel;
 }
 
 function getSelectedActivities() {
@@ -142,7 +155,33 @@ function createDoughnutChartConfig() {
                     }
                 }
             }
-        }
+        },
+        plugins: [{
+            id: 'centerText',
+            beforeDraw: function(chart) {
+                if (chart.config.data.totalCount) {
+                    const ctx = chart.ctx;
+                    const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    // แสดงจำนวนรวม
+                    ctx.font = 'bold 30px Fontin';
+                    ctx.fillStyle = '#e7c491';
+                    ctx.fillText(chart.config.data.totalCount.toString(), centerX, centerY - 10);
+
+                    // แสดงคำว่า "RUNS" หรือ "TIMES"
+                    ctx.font = '12px Fontin';
+                    ctx.fillStyle = '#af6025';
+                    ctx.fillText(chart.config.data.isMap ? 'RUNS' : 'TIMES', centerX, centerY + 10);
+
+                    ctx.restore();
+                }
+            }
+        }]
     };
 }
 
@@ -170,25 +209,25 @@ function updateAnalysis() {
     });
 
     // อัพเดทกราฟ Map
-    updateAnalysisCharts(mapExpChart, mapFreqChart, mapStats);
+    updateAnalysisCharts(mapExpChart, mapFreqChart, mapStats, true);
     
     // อัพเดทกราฟ Activity
-    updateAnalysisCharts(activityExpChart, activityFreqChart, activityStats);
+    updateAnalysisCharts(activityExpChart, activityFreqChart, activityStats, false);
 }
 
 /* ...existing code... */
 
-function updateAnalysisCharts(expChart, freqChart, stats) {
+function updateAnalysisCharts(expChart, freqChart, stats, isMap = true) {
     // เรียงข้อมูลตามค่าเฉลี่ยจากมากไปน้อยสำหรับกราฟแท่ง
     const sortedForBarChart = Object.entries(stats).sort((a, b) => {
         const avgA = a[1].total / a[1].count;
         const avgB = b[1].total / b[1].count;
-        return avgB - avgA; // เรียงจากมากไปน้อย
+        return avgB - avgA;
     });
 
     // เรียงข้อมูลตามความถี่จากน้อยไปมากสำหรับกราฟโดนัท
     const sortedForDoughnut = Object.entries(stats).sort((a, b) => {
-        return a[1].count - b[1].count; // เรียงจากน้อยไปมาก
+        return a[1].count - b[1].count;
     });
 
     // อัพเดทกราฟแท่ง
@@ -198,9 +237,14 @@ function updateAnalysisCharts(expChart, freqChart, stats) {
     );
     expChart.update();
 
+    // คำนวณ total count
+    const totalCount = Object.values(stats).reduce((sum, stat) => sum + stat.count, 0);
+    
     // อัพเดทกราฟโดนัท
     freqChart.data.labels = sortedForDoughnut.map(([key]) => key);
     freqChart.data.datasets[0].data = sortedForDoughnut.map(([_, value]) => value.count);
+    freqChart.data.totalCount = totalCount;
+    freqChart.data.isMap = isMap; // เพิ่มตัวแปรเพื่อแยกระหว่าง map และ activity
     freqChart.update();
 }
 
@@ -214,7 +258,7 @@ function calculateTotalProgress() {
 }
 
 function calculateCurrentProgress(currentExp, requiredExp) {
-    return ((currentExp / requiredExp) * 100).toFixed(2);
+    return ((parseFloat(currentExp) / parseFloat(requiredExp)) * 100).toFixed(2);
 }
 
 /* ...existing code... */
@@ -235,13 +279,20 @@ function updateProgressBar(percentage) {
 
 function updateProgressDisplay(currentProgress, level, charClass, charName) {
     const progressElement = document.getElementById('currentProgress');
+    const characterImage = characterImages[charClass] || '';
     
-    // แสดงเฉพาะ character details
     const detailsHTML = `
         <div class="current-progress-details">
-            <span>${charName}</span>
-            <span>Level ${level}</span>
-            <span>Class ${charClass}</span>
+            <div class="character-info">
+                <span>${charName}</span>
+                <span>Class: ${charClass}</span>
+                <span>Level: ${level}</span>
+            </div>
+            ${characterImage ? `
+                <div class="character-portrait">
+                    <img src="${characterImage}" alt="${charClass} portrait">
+                </div>
+            ` : ''}
         </div>
     `;
     
@@ -251,27 +302,26 @@ function updateProgressDisplay(currentProgress, level, charClass, charName) {
 // แก้ไขฟังก์ชัน recordExperience
 function recordExperience() {
     const currentLevel = document.getElementById('currentLevel').value;
-    const currentExp = parseInt(document.getElementById('currentExp').value);
-    const requiredExp = parseInt(document.getElementById('requiredExp').value);
+    const currentExp = parseFloat(document.getElementById('currentExp').value).toFixed(2);
+    const requiredExp = parseFloat(document.getElementById('requiredExp').value).toFixed(2);
     const mapName = document.getElementById('mapName').value;
     const mapLevel = document.getElementById('mapLevel').value;
     const activities = getSelectedActivities();
     const charName = document.getElementById('characterName').value;
     const charClass = document.getElementById('characterClass').value;
 
-    // ตรวจสอบเฉพาะ required fields และยอมให้ currentExp เป็น 0 ได้
     if (!requiredExp || currentExp === undefined || !mapName) {
         alert('Please fill all required fields (marked with *)');
         return;
     }
 
     if (previousExp === 0) {
-        previousExp = currentExp;
+        previousExp = parseFloat(currentExp);
         return;
     }
 
-    // ถ้า exp ติดลบให้ถือว่าเป็น 0
-    const expGained = Math.max(0, currentExp - previousExp);
+    // คำนวณ exp gained โดยไม่ปัดทศนิยม
+    const expGained = Math.max(0, (parseFloat(currentExp) - previousExp)).toFixed(2);
     const expPercentage = calculateExpPercentage(currentLevel, expGained);
     const currentProgress = calculateCurrentProgress(currentExp, requiredExp);
     
@@ -286,8 +336,16 @@ function recordExperience() {
         activities: activities
     });
 
-    // Save default values with current exp
-    saveDefaultValues(currentLevel, requiredExp, currentExp, charName, charClass);
+    // Save default values with current exp and map details
+    saveDefaultValues(
+        currentLevel, 
+        requiredExp, 
+        currentExp, 
+        charName, 
+        charClass,
+        mapName,
+        mapLevel
+    );
 
     // Update current progress display and progress bar
     updateProgressDisplay(currentProgress, currentLevel, charClass, charName);
@@ -295,7 +353,7 @@ function recordExperience() {
 
     updateDisplay(expGained, expPercentage, requiredExp, mapName, activities);
     saveToLocalStorage();
-    previousExp = currentExp;
+    previousExp = parseFloat(currentExp);
 
     // แสดงข้อความสรุป
     const summaryElement = document.getElementById('recordSummary');
@@ -316,23 +374,16 @@ function recordExperience() {
 }
 
 function calculateExpPercentage(level, expGained) {
-    const requiredExp = parseInt(document.getElementById('requiredExp').value) || 0;
+    const requiredExp = parseFloat(document.getElementById('requiredExp').value) || 0;
     if (requiredExp <= 0) {
         alert('Please enter required experience for current level!');
         return 0;
     }
-    // ถ้า exp ติดลบให้ถือว่าเป็น 0
-    const safeExpGained = Math.max(0, expGained);
-    return ((safeExpGained / requiredExp) * 100).toFixed(2);
+    return ((parseFloat(expGained) / requiredExp) * 100).toFixed(2);
 }
 
 function updateDisplay(expGained, expPercentage, requiredExp, mapName, activities) {
     const totalProgress = calculateTotalProgress();
-    
-    document.getElementById('expGained').textContent = 
-        `Experience Gained: ${expGained.toLocaleString()}`;
-    document.getElementById('expPercentage').textContent = 
-        `${expPercentage}% of level gained`;
     
     const historyList = document.getElementById('expHistory');
     const listItem = document.createElement('li');
@@ -379,7 +430,7 @@ function loadFromLocalStorage() {
             document.getElementById('currentLevel').value = lastEntry.level;
             document.getElementById('requiredExp').value = lastEntry.requiredExp;
             document.getElementById('currentExp').value = lastEntry.currentExp;
-            previousExp = lastEntry.currentExp;
+            previousExp = parseFloat(lastEntry.currentExp);
 
             // Update displays
             updateProgressDisplay(
@@ -657,34 +708,59 @@ function toggleExpHistoryGraph() {
 }
 
 function updateAnalysisSummary() {
-    // คำนวณค่าเฉลี่ย EXP ต่อ map
-    const avgExp = calculateAverageExpPerMap();
-    document.getElementById('avgExpPerMap').textContent = `${avgExp.toLocaleString()} exp`;
+    const avgExpData = calculateAverageExpPerMap();
+    const mapsToLevel = calculateMapsToNextLevel();
+    
+    document.getElementById('avgExpPerMap').textContent = 
+        avgExpData.exp > 0 ? 
+        `${avgExpData.exp} exp (${avgExpData.percentage}%)` : 
+        '0 exp (0%)';
+    
+    document.getElementById('mapsToLevel').textContent = 
+        mapsToLevel !== '-' ? `${mapsToLevel} maps` : '0 maps';
 
-    // หา maps ที่ให้ exp ดีที่สุด
+    // อัพเดท Best Maps
     const bestMaps = findBestMapsForExp();
-    document.getElementById('bestMaps').innerHTML = bestMaps.map(map => 
-        `<div>${map.name}: ${map.exp.toLocaleString()} exp</div>`
-    ).join('');
+    document.getElementById('bestMaps').innerHTML = bestMaps
+        .map(map => `${map.name} (${map.avgPercentage}%)`)
+        .join('<br>');
 
-    // หา activities ที่ให้ exp ดีที่สุด
+    // อัพเดท Best Activities
     const bestActivities = findBestActivitiesForExp();
-    document.getElementById('bestActivities').innerHTML = bestActivities.map(activity => 
-        `<div>${activity.name}: ${activity.exp.toLocaleString()} exp</div>`
-    ).join('');
+    document.getElementById('bestActivities').innerHTML = bestActivities
+        .map(activity => `${activity.name} (${activity.avgPercentage}%)`)
+        .join('<br>');
+}
 
-    // คำนวณจำนวน maps ที่ต้องเล่นถึง level ถัดไป
-    const mapsToNext = calculateMapsToNextLevel();
-    document.getElementById('mapsToLevel').textContent = `${mapsToNext} maps`;
+async function loadImageAsBase64(url) {
+    try {
+        // ใช้ proxy service เพื่อหลีกเลี่ยง CORS
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const response = await fetch(proxyUrl + url);
+        const blob = await response.blob();
+        
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error loading image:', error);
+        return null;
+    }
 }
 
 async function shareAnalysis() {
     try {
         const container = document.createElement('div');
+        const charClass = document.getElementById('characterClass').value;
+        
+        // เพิ่มความกว้างเป็น 500px
         container.style.cssText = `
             background: linear-gradient(135deg, #1a1410 0%, #2d1810 100%);
-            width: 300px;
-            padding: 12px;
+            width: 500px;
+            padding: 20px;
             font-family: 'Fontin', 'Noto Sans', Arial, sans-serif;
             position: fixed;
             left: -9999px;
@@ -692,148 +768,171 @@ async function shareAnalysis() {
             box-sizing: border-box;
         `;
 
+        // คำนวณ total counts
+        const mapStats = {};
+        const activityStats = {};
+        expHistory.forEach(entry => {
+            mapStats[entry.mapName] = (mapStats[entry.mapName] || 0) + 1;
+            entry.activities.forEach(activity => {
+                activityStats[activity] = (activityStats[activity] || 0) + 1;
+            });
+        });
+
+        const totalMaps = Object.values(mapStats).reduce((sum, count) => sum + count, 0);
+        const totalActivities = Object.values(activityStats).reduce((sum, count) => sum + count, 0);
+        const currentProgress = calculateCurrentProgress(
+            parseFloat(document.getElementById('currentExp').value),
+            parseFloat(document.getElementById('requiredExp').value)
+        );
+
         container.innerHTML = `
             <div style="
                 border: 2px solid #af6025;
                 border-radius: 8px;
-                padding: 12px;
+                padding: 20px;
                 background: linear-gradient(160deg, rgba(45, 24, 16, 0.4) 0%, rgba(26, 20, 16, 0.4) 100%);
                 box-shadow: 0 0 20px rgba(175, 96, 37, 0.1);
             ">
                 <div style="
                     text-align: center;
-                    margin-bottom: 12px;
-                    padding: 8px;
+                    margin-bottom: 20px;
+                    padding: 20px;
                     background: rgba(45, 24, 16, 0.6);
                     border-radius: 6px;
                     border: 1px solid rgba(175, 96, 37, 0.3);
                 ">
-                    <div style="
-                        font-size: 12px;
-                        color: #e7c491;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 4px;
-                    ">
-                        <div><span style="color: #af6025;">Name:</span> ${document.getElementById('characterName').value}</div>
-                        <div><span style="color: #af6025;">Level:</span> ${document.getElementById('currentLevel').value}</div>
-                        <div><span style="color: #af6025;">Progress:</span> ${calculateCurrentProgress(
-                            parseInt(document.getElementById('currentExp').value),
-                            parseInt(document.getElementById('requiredExp').value)
-                        )}%</div>
+                    <div style="color: #af6025; font-size: 16px;">
+                        <div style="margin-bottom: 10px;">Name: <span style="color: #e7c491;">${document.getElementById('characterName').value}</span></div>
+                        <div style="margin-bottom: 10px;">Class: <span style="color: #e7c491;">${charClass}</span></div>
+                        <div>Level: <span style="color: #e7c491;">${document.getElementById('currentLevel').value} (${currentProgress}%)</span></div>
                     </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Most Played Section -->
                     <div style="
                         border: 1px solid rgba(175, 96, 37, 0.4);
                         border-radius: 6px;
-                        padding: 10px;
-                        background: linear-gradient(135deg, rgba(45, 24, 16, 0.6) 0%, rgba(26, 20, 16, 0.6) 100%);
+                        padding: 15px;
+                        background: rgba(45, 24, 16, 0.6);
                     ">
                         <h3 style="
                             color: #e7c491;
-                            margin: 0 0 8px 0;
-                            font-size: 13px;
+                            margin: 0 0 15px 0;
+                            font-size: 16px;
                             text-align: center;
-                        ">Best Farming</h3>
-                        <div style="margin-bottom: 8px;">
-                            <h4 style="color: #af6025; margin: 0 0 6px 0; font-size: 11px;">Maps:</h4>
-                            ${findBestMapsForExp().map((map, index) => `
-                                <p style="
-                                    margin: 3px 0;
-                                    color: #e7c491;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 4px;
-                                    font-size: 11px;
-                                ">
-                                    <span style="font-size: 12px;">${['🥇', '🥈', '🥉'][index]}</span>
-                                    ${map.name} <span style="color: #af6025;">(${map.avgPercentage}%)</span>
-                                </p>
-                            `).join('')}
-                        </div>
-                        <div>
-                            <h4 style="color: #af6025; margin: 0 0 6px 0; font-size: 11px;">Activities:</h4>
-                            ${findBestActivitiesForExp().map((activity, index) => `
-                                <p style="
-                                    margin: 3px 0;
-                                    color: #e7c491;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 4px;
-                                    font-size: 11px;
-                                ">
-                                    <span style="font-size: 12px;">${['🥇', '🥈', '🥉'][index]}</span>
-                                    ${activity.name} <span style="color: #af6025;">(${activity.avgPercentage}%)</span>
-                                </p>
-                            `).join('')}
+                        ">Most Played</h3>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #af6025; margin: 0 0 10px 0; font-size: 14px;">Maps (Total: ${totalMaps} runs)</h4>
+                                ${findMostPlayedMaps().map((map, index) => `
+                                    <p style="
+                                        margin: 5px 0;
+                                        color: #e7c491;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        font-size: 14px;
+                                    ">
+                                        <span style="font-size: 16px;">${['🥇', '🥈', '🥉'][index]}</span>
+                                        ${map.name} <span style="color: #af6025;">(${map.count})</span>
+                                    </p>
+                                `).join('')}
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="color: #af6025; margin: 0 0 10px 0; font-size: 14px;">Activities (Total: ${totalActivities} times)</h4>
+                                ${findMostPlayedActivities().map((activity, index) => `
+                                    <p style="
+                                        margin: 5px 0;
+                                        color: #e7c491;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        font-size: 14px;
+                                    ">
+                                        <span style="font-size: 16px;">${['🥇', '🥈', '🥉'][index]}</span>
+                                        ${activity.name} <span style="color: #af6025;">(${activity.count})</span>
+                                    </p>
+                                `).join('')}
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Best Farming Section -->
                     <div style="
                         border: 1px solid rgba(175, 96, 37, 0.4);
                         border-radius: 6px;
-                        padding: 10px;
-                        background: linear-gradient(135deg, rgba(45, 24, 16, 0.6) 0%, rgba(26, 20, 16, 0.6) 100%);
+                        padding: 15px;
+                        background: rgba(45, 24, 16, 0.6);
                     ">
                         <h3 style="
                             color: #e7c491;
-                            margin: 0 0 8px 0;
-                            font-size: 13px;
+                            margin: 0 0 15px 0;
+                            font-size: 16px;
                             text-align: center;
-                        ">Most Played</h3>
-                        <div style="margin-bottom: 8px;">
-                            <h4 style="color: #af6025; margin: 0 0 6px 0; font-size: 11px;">Maps:</h4>
-                            ${findMostPlayedMaps().map((map, index) => `
-                                <p style="
-                                    margin: 3px 0;
-                                    color: #e7c491;
-                                    font-size: 11px;
-                                ">
-                                    ${index + 1}. ${map.name} <span style="color: #af6025;">(${map.count})</span>
-                                </p>
-                            `).join('')}
-                        </div>
-                        <div>
-                            <h4 style="color: #af6025; margin: 0 0 6px 0; font-size: 11px;">Activities:</h4>
-                            ${findMostPlayedActivities().map((activity, index) => `
-                                <p style="
-                                    margin: 3px 0;
-                                    color: #e7c491;
-                                    font-size: 11px;
-                                ">
-                                    ${index + 1}. ${activity.name} <span style="color: #af6025;">(${activity.count})</span>
-                                </p>
-                            `).join('')}
+                        ">Best Farming</h3>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                <h4 style="color: #af6025; margin: 0 0 10px 0; font-size: 14px;">Maps:</h4>
+                                ${findBestMapsForExp().map((map, index) => `
+                                    <p style="
+                                        margin: 5px 0;
+                                        color: #e7c491;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        font-size: 14px;
+                                    ">
+                                        <span style="font-size: 16px;">${['🥇', '🥈', '🥉'][index]}</span>
+                                        ${map.name} <span style="color: #af6025;">(${map.avgPercentage}%)</span>
+                                    </p>
+                                `).join('')}
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="color: #af6025; margin: 0 0 10px 0; font-size: 14px;">Activities:</h4>
+                                ${findBestActivitiesForExp().map((activity, index) => `
+                                    <p style="
+                                        margin: 5px 0;
+                                        color: #e7c491;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        font-size: 14px;
+                                    ">
+                                        <span style="font-size: 16px;">${['🥇', '🥈', '🥉'][index]}</span>
+                                        ${activity.name} <span style="color: #af6025;">(${activity.avgPercentage}%)</span>
+                                    </p>
+                                `).join('')}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div style="
                     text-align: center;
-                    margin-top: 8px;
-                    padding-top: 6px;
+                    margin-top: 15px;
+                    padding-top: 10px;
                     border-top: 1px solid rgba(175, 96, 37, 0.3);
                 ">
                     <p style="
                         color: #af6025;
                         margin: 0;
-                        font-size: 9px;
+                        font-size: 12px;
                         opacity: 0.8;
                     ">Created with PoE2 EXP Tracker</p>
                 </div>
             </div>
         `;
 
-        // แนบ container เข้ากับ DOM และสร้างภาพ (ส่วนที่เหลือเหมือนเดิม)
         document.body.appendChild(container);
+
         try {
             const canvas = await html2canvas(container, {
                 backgroundColor: '#1a1410',
                 scale: 2,
                 logging: false,
-                useCORS: true
+                width: 500, // ปรับความกว้างให้ตรงกับ container
+                height: container.offsetHeight
             });
 
             const modal = document.getElementById('shareModal');
@@ -865,9 +964,15 @@ document.getElementById('shareModal').addEventListener('click', function(e) {
 
 // เพิ่มฟังก์ชันสำหรับคำนวณค่าเฉลี่ย EXP ต่อ map
 function calculateAverageExpPerMap() {
-    if (expHistory.length === 0) return 0;
-    const totalExp = expHistory.reduce((sum, entry) => sum + entry.expGained, 0);
-    return Math.round(totalExp / expHistory.length);
+    if (expHistory.length === 0) return { exp: 0, percentage: 0 };
+    
+    const totalExp = expHistory.reduce((sum, entry) => sum + parseFloat(entry.expGained), 0);
+    const totalPercentage = expHistory.reduce((sum, entry) => sum + parseFloat(entry.percentage), 0);
+    
+    return {
+        exp: (totalExp / expHistory.length).toFixed(2),
+        percentage: (totalPercentage / expHistory.length).toFixed(2)
+    };
 }
 
 // เพิ่มฟังก์ชันหา maps ที่ให้ exp ดีที่สุด
@@ -881,7 +986,7 @@ function findBestMapsForExp() {
                 count: 0
             };
         }
-        mapStats[entry.mapName].totalExp += entry.expGained;
+        mapStats[entry.mapName].totalExp += parseFloat(entry.expGained);
         mapStats[entry.mapName].totalPercentage += parseFloat(entry.percentage);
         mapStats[entry.mapName].count++;
     });
@@ -892,7 +997,7 @@ function findBestMapsForExp() {
             exp: Math.round(stats.totalExp / stats.count),
             avgPercentage: (stats.totalPercentage / stats.count).toFixed(2)
         }))
-        .sort((a, b) => b.exp - a.exp)
+        .sort((a, b) => parseFloat(b.avgPercentage) - parseFloat(a.avgPercentage))  // เรียงจากมากไปน้อย
         .slice(0, 3);
 }
 
@@ -908,7 +1013,7 @@ function findBestActivitiesForExp() {
                     count: 0
                 };
             }
-            activityStats[activity].totalExp += entry.expGained;
+            activityStats[activity].totalExp += parseFloat(entry.expGained);
             activityStats[activity].totalPercentage += parseFloat(entry.percentage);
             activityStats[activity].count++;
         });
@@ -920,15 +1025,15 @@ function findBestActivitiesForExp() {
             exp: Math.round(stats.totalExp / stats.count),
             avgPercentage: (stats.totalPercentage / stats.count).toFixed(2)
         }))
-        .sort((a, b) => b.exp - a.exp)
+        .sort((a, b) => parseFloat(b.avgPercentage) - parseFloat(a.avgPercentage))  // เรียงจากมากไปน้อย
         .slice(0, 3);
 }
 
 // เพิ่มฟังก์ชันคำนวณจำนวน maps ที่ต้องเล่นถึง level ถัดไป
 function calculateMapsToNextLevel() {
-    const currentExp = parseInt(document.getElementById('currentExp').value);
-    const requiredExp = parseInt(document.getElementById('requiredExp').value);
-    const avgExpPerMap = calculateAverageExpPerMap();
+    const currentExp = parseFloat(document.getElementById('currentExp').value);
+    const requiredExp = parseFloat(document.getElementById('requiredExp').value);
+    const avgExpPerMap = parseFloat(calculateAverageExpPerMap().exp);
     
     if (!avgExpPerMap || !requiredExp || currentExp === undefined) return '-';
     
@@ -962,3 +1067,35 @@ function findMostPlayedActivities() {
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
 }
+
+// แก้ไขฟังก์ชัน filterMaps
+function filterMaps() {
+    const checkedTypes = Array.from(document.querySelectorAll('input[name="mapType"]:checked'))
+        .map(cb => cb.value);
+    const mapSelect = document.getElementById('mapName');
+    const options = mapSelect.getElementsByTagName('option');
+
+    for (let option of options) {
+        const type = option.getAttribute('data-type');
+        if (checkedTypes.includes(type)) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
+    }
+
+    // ถ้า selected option ถูก hide ให้เลือก option แรกที่แสดงอยู่แทน
+    if (mapSelect.selectedOptions[0].style.display === 'none') {
+        for (let option of options) {
+            if (option.style.display !== 'none') {
+                mapSelect.value = option.value;
+                break;
+            }
+        }
+    }
+}
+
+// เพิ่ม event listener สำหรับ checkbox
+document.querySelectorAll('input[name="mapType"]').forEach(checkbox => {
+    checkbox.addEventListener('change', filterMaps);
+});
