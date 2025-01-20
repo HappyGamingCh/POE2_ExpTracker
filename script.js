@@ -8,22 +8,32 @@ let expHistoryChart = null;
 
 // เพิ่มตัวแปร object สำหรับเก็บ URL รูปภาพของแต่ละ class
 const characterImages = {
-    'Witch Hunter': 'https://img.game8.co/4052791/ebef870a91cef16c9d900c81d8f243e5.png/show',
-    'Invoker': 'https://img.game8.co/4052796/579ad47527c6654fe07091ed110a0ed2.png/show',
-    // เพิ่ม class อื่นๆ ตามต้องการ
+    'Acolyte': 'https://i.imgur.com/FKRmQ4t.png',
+    'Blood-Mage': 'https://i.imgur.com/kT2IoGY.png',
+    'Chronomancer': 'https://i.imgur.com/PLLbRlV.png',
+    'Deadeye': 'https://i.imgur.com/fZHeIzf.png',
+    'Gemling': 'https://i.imgur.com/FiAG2LZ.png',
+    'Infernalist': 'https://i.imgur.com/lr8AKMm.png',
+    'Invoker': 'https://i.imgur.com/dJCqLq5.png',
+    'Pathfinder': 'https://i.imgur.com/ZV36CqA.png',
+    'Stormweaver': 'https://i.imgur.com/9EUzMZI.png',
+    'Titan': 'https://i.imgur.com/c6phl6C.png',
+    'Warbringer': 'https://i.imgur.com/HTfc0Ap.png',
+    'Witch Hunter': 'https://i.imgur.com/kqvQpdB.png'
 };
 
-// เพิ่มฟังก์ชันสำหรับจัดการค่า default
-function saveDefaultValues(level, requiredExp, currentExp, name, charClass, mapName, mapLevel) {
+// Modify saveDefaultValues function
+function saveDefaultValues(level, requiredExp, currentExp, name, charClass, mapName, waystoneLevel) {
     localStorage.setItem('defaultLevel', level);
     localStorage.setItem('defaultRequiredExp', requiredExp);
     localStorage.setItem('defaultCurrentExp', currentExp);
     localStorage.setItem('defaultCharName', name);
     localStorage.setItem('defaultCharClass', charClass);
     localStorage.setItem('defaultMapName', mapName);
-    localStorage.setItem('defaultMapLevel', mapLevel);
+    localStorage.setItem('defaultWaystoneLevel', waystoneLevel);
 }
 
+// Modify loadDefaultValues function
 function loadDefaultValues() {
     const defaultLevel = localStorage.getItem('defaultLevel');
     const defaultRequiredExp = localStorage.getItem('defaultRequiredExp');
@@ -31,7 +41,7 @@ function loadDefaultValues() {
     const defaultCharName = localStorage.getItem('defaultCharName');
     const defaultCharClass = localStorage.getItem('defaultCharClass');
     const defaultMapName = localStorage.getItem('defaultMapName');
-    const defaultMapLevel = localStorage.getItem('defaultMapLevel');
+    const defaultWaystoneLevel = localStorage.getItem('defaultWaystoneLevel');
     
     if (defaultLevel) document.getElementById('currentLevel').value = defaultLevel;
     if (defaultRequiredExp) document.getElementById('requiredExp').value = defaultRequiredExp;
@@ -39,7 +49,7 @@ function loadDefaultValues() {
     if (defaultCharName) document.getElementById('characterName').value = defaultCharName;
     if (defaultCharClass) document.getElementById('characterClass').value = defaultCharClass;
     if (defaultMapName) document.getElementById('mapName').value = defaultMapName;
-    if (defaultMapLevel) document.getElementById('mapLevel').value = defaultMapLevel;
+    if (defaultWaystoneLevel) document.getElementById('waystoneLevel').value = defaultWaystoneLevel;
 }
 
 function getSelectedActivities() {
@@ -218,29 +228,29 @@ function updateAnalysis() {
 /* ...existing code... */
 
 function updateAnalysisCharts(expChart, freqChart, stats, isMap = true) {
-    // เรียงข้อมูลตามค่าเฉลี่ยจากมากไปน้อยสำหรับกราฟแท่ง
+    // Sort data by average percentage from highest to lowest for bar chart
     const sortedForBarChart = Object.entries(stats).sort((a, b) => {
         const avgA = a[1].total / a[1].count;
         const avgB = b[1].total / b[1].count;
-        return avgB - avgA;
+        return avgB - avgA;  // Sort descending
     });
 
-    // เรียงข้อมูลตามความถี่จากน้อยไปมากสำหรับกราฟโดนัท
+    // Sort data by count from highest to lowest for doughnut chart
     const sortedForDoughnut = Object.entries(stats).sort((a, b) => {
-        return a[1].count - b[1].count;
+        return b[1].count - a[1].count;  // Sort descending
     });
 
-    // อัพเดทกราฟแท่ง
+    // Update bar chart
     expChart.data.labels = sortedForBarChart.map(([key]) => key);
     expChart.data.datasets[0].data = sortedForBarChart.map(([_, value]) => 
         (value.total / value.count).toFixed(2)
     );
     expChart.update();
 
-    // คำนวณ total count
+    // Calculate total count
     const totalCount = Object.values(stats).reduce((sum, stat) => sum + stat.count, 0);
     
-    // อัพเดทกราฟโดนัท
+    // Update doughnut chart
     freqChart.data.labels = sortedForDoughnut.map(([key]) => key);
     freqChart.data.datasets[0].data = sortedForDoughnut.map(([_, value]) => value.count);
     freqChart.data.totalCount = totalCount;
@@ -305,7 +315,7 @@ function recordExperience() {
     const currentExp = parseFloat(document.getElementById('currentExp').value).toFixed(2);
     const requiredExp = parseFloat(document.getElementById('requiredExp').value).toFixed(2);
     const mapName = document.getElementById('mapName').value;
-    const mapLevel = document.getElementById('mapLevel').value;
+    const mapLevel = calculateMapLevel(); // Replace the old mapLevel retrieval with this
     const activities = getSelectedActivities();
     const charName = document.getElementById('characterName').value;
     const charClass = document.getElementById('characterClass').value;
@@ -333,7 +343,8 @@ function recordExperience() {
         currentExp: currentExp,
         mapName: mapName,
         mapLevel: mapLevel,
-        activities: activities
+        activities: activities,
+        timestamp: new Date().getTime() // Add timestamp for sorting
     });
 
     // Save default values with current exp and map details
@@ -344,7 +355,7 @@ function recordExperience() {
         charName, 
         charClass,
         mapName,
-        mapLevel
+        document.getElementById('waystoneLevel').value
     );
 
     // Update current progress display and progress bar
@@ -412,7 +423,7 @@ function loadFromLocalStorage() {
             const historyList = document.getElementById('expHistory');
             const listItem = document.createElement('li');
             listItem.innerHTML = `
-                <span class="history-map-info">${entry.mapName}: ${entry.expGained.toLocaleString()} exp (${entry.percentage}%)</span>
+                <span class="history-map-info">${entry.mapName} (Level ${entry.mapLevel}): ${Number(entry.expGained).toLocaleString()} exp (${entry.percentage}%)</span>
                 <span class="history-activities">Activities: ${entry.activities?.join(', ') || 'None'}</span>
             `;
             historyList.appendChild(listItem);
@@ -450,7 +461,7 @@ function loadFromLocalStorage() {
     }
 }
 
-// แก้ไขฟังก์ชัน clearAllData
+// Modify clearAllData function to ensure waystoneLevel is reset
 function clearAllData() {
     if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
         previousExp = 0;
@@ -471,6 +482,9 @@ function clearAllData() {
         document.getElementById('characterClass').value = '';
         document.getElementById('mapLevel').value = '';
         document.getElementById('mapName').value = '';
+        
+        // Reset waystoneLevel to default (15)
+        document.getElementById('waystoneLevel').value = '15';
         
         // Reset progress bar
         updateProgressBar(0);
@@ -523,6 +537,9 @@ function clearAllData() {
         const summaryElement = document.getElementById('recordSummary');
         summaryElement.innerHTML = '';
         summaryElement.classList.remove('show');
+
+        // Force save empty state
+        saveToLocalStorage();
     }
 }
 
@@ -1099,3 +1116,21 @@ function filterMaps() {
 document.querySelectorAll('input[name="mapType"]').forEach(checkbox => {
     checkbox.addEventListener('change', filterMaps);
 });
+
+// Add this new function
+function calculateMapLevel() {
+    const waystoneLevel = parseInt(document.getElementById('waystoneLevel').value);
+    const activities = getSelectedActivities();
+    
+    let mapLevel = waystoneLevel + 64;
+    
+    if (activities.includes('Irradiated')) {
+        mapLevel += 1;
+    }
+    
+    if (activities.includes('Corruption')) {
+        mapLevel += 1;
+    }
+    
+    return mapLevel;
+}

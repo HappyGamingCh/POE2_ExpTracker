@@ -352,9 +352,8 @@ h1, h2 {
 
 .checkbox-group {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 columns */
-    grid-template-rows: repeat(2, 1fr);    /* 2 rows */
-    gap: 12px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
     padding: 15px;
     background: rgba(45, 24, 16, 0.3);
     border-radius: 5px;
@@ -362,16 +361,15 @@ h1, h2 {
 }
 
 .checkbox-group label {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: #e7c491;
     cursor: pointer;
     padding: 6px 8px;
     border-radius: 3px;
     transition: background-color 0.2s;
     white-space: nowrap;
-    justify-content: flex-start;
 }
 
 .checkbox-group label:hover {
@@ -900,4 +898,42 @@ select:invalid:focus {
     width: 14px;
     height: 14px;
     cursor: pointer;
+}
+
+#waystoneLevel {
+    width: 100%;
+    padding: 10px;
+    height: 40px;
+    font-size: 1em;
+    background: #2d2d2d;
+    border: 1px solid #af6025;
+    color: #c7c7c7;
+    border-radius: 3px;
+    box-sizing: border-box;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23af6025' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10px) center;
+    padding-right: 30px;
+}
+
+#waystoneLevel:focus {
+    outline: none;
+    border-color: #e7c491;
+    box-shadow: 0 0 10px rgba(175, 96, 37, 0.3);
+}
+
+#waystoneLevel:hover {
+    border-color: #e7c491;
+}
+
+/* Add these new styles for activity icons */
+.activity-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    margin-right: 4px;
+    vertical-align: middle;
 }
