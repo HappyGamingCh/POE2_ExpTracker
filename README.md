@@ -1,81 +1,77 @@
-# PoE2 Experience Tracker  
-An experience tracking and analysis tool for Path of Exile 2.
+# Path of Exile 2 Experience Tracker
 
----
+A web-based tool for tracking experience gain in Path of Exile 2. This tool helps players monitor their leveling progress and analyze their mapping efficiency.
 
-## Features  
+## Features
 
-### **Experience Tracking**  
-- Records experience gained from each map.  
-- Displays current level progress.  
-- Logs activities performed in each map.  
+### Character Management
+- Track character name, class, and level
+- Automatic level calculation based on total experience
+- Display current and next level experience requirements
 
-### **Data Analysis**  
-- Displays average EXP per map.  
-- Highlights the best EXP-yielding maps (Top 3).  
-- Highlights the best EXP-yielding activities (Top 3).  
-- Calculates the number of maps needed to reach the next level.  
+### Map Tracking
+- Record experience gained from maps
+- Track map levels and activities
+- Filter maps by type (General, Tower, Hideout, Citadel)
+- Calculate map level based on waystone level and activities
 
-### **Visualization**  
-- Graphs showing EXP history.  
-- Graphs analyzing maps and activities.  
-- Data export as an image.  
+### Experience Analysis
+- Visual progress bar showing level progression
+- Experience history graph
+- Average experience per map
+- Estimated maps needed for next level
+- Best maps and activities for experience gain
+- Map and activity frequency analysis
 
----
+### Data Visualization
+- Interactive charts showing experience gains
+- Historical data tracking
+- Detailed tooltips with map information
+- Customizable history view (5, 10, 20 entries, or all)
 
-## How to Use  
+### Data Management
+- Local storage for persistent data
+- Share functionality for analysis results
+- Clear history option
 
-### **Character Information Input**  
-1. Enter your character details:  
-   - Character Name  
-   - Class  
-   - Current Level  
-   - EXP required for the current level  
-   - Total current EXP  
+## Usage
 
-### **Map Data Recording**  
-1. Select the map name.  
-2. Specify the map level (if applicable).  
-3. Choose the activities performed in the map.  
-4. Click the **"Record Experience"** button to save the data.  
+1. Enter your character details (name, class)
+2. Input your current total experience (in millions)
+3. Select the map you ran
+4. Choose the waystone level and any activities
+5. Click "Record" to save the entry
 
-### **Viewing Analysis**  
-- Access the data summary in the **Analysis** box.  
-- View the EXP history graph.  
-- Analyze the map and activity performance using the graph.  
+The tool will automatically:
+- Calculate your character level
+- Show experience gained
+- Update progress charts
+- Display analysis of your mapping efficiency
 
-### **Sharing Data**  
-- Click the **"Share"** button to generate and download a summary image.  
+## Technical Details
 
----
+### Requirements
+- Modern web browser with JavaScript enabled
+- Local storage enabled for data persistence
 
-## [Try the Tool Now!](https://happygamingch.github.io/POE2_ExpTracker/)  
+### Technologies Used
+- HTML5
+- CSS3
+- JavaScript
+- Chart.js for data visualization
+- HTML2Canvas for sharing functionality
 
----
+## Notes
 
-## Technologies Used  
-- **HTML5**  
-- **CSS3**  
-- **JavaScript**  
-- **Chart.js** (for graph creation)  
-- **html2canvas** (for image generation)  
+- Experience values should be entered in millions (e.g., 1.5 for 1,500,000 experience)
+- Character level is automatically calculated from total experience
+- Map level calculation: Base level (64) + Waystone level + Activity modifiers
 
----
+## Support
 
-## License  
-This project is licensed under the **Pednoi License**.  
+For issues or suggestions, please visit [GitHub repository URL].
 
----
+## Credits
 
-## Developer  
-Pednoi
-
----
-
-## Support  
-If you enjoy this tool, consider supporting its development via the **Donate** button.  
-
----
-
-**Note:**  
-This tool is not directly affiliated with the Path of Exile 2 game. All data must be entered manually.  
+Created by Pednoi
+Character portraits and game assets are property of Grinding Gear Games. 
