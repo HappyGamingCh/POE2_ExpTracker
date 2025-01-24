@@ -661,6 +661,7 @@ function initExpHistoryChart() {
             scales: {
                 x: {
                     beginAtZero: true,
+                    max: 100,
                     grid: {
                         color: 'rgba(175, 96, 37, 0.2)'
                     },
