@@ -69,7 +69,7 @@ The tool will automatically:
 
 ## Support
 
-For issues or suggestions, please visit [\[GitHub repository URL\]](https://github.com/HappyGamingCh/POE2_ExpTracker).
+For issues or suggestions, please visit [\[GitHub Pednoi\]](https://github.com/Pednoi/POE2_ExpTracker).
 
 ## Credits
 

@@ -491,7 +491,7 @@ function recordExperience() {
         Record Summary:<br>
         • Map: ${mapName} ${calculateMapLevel() ? `(Level ${calculateMapLevel()})` : ''}<br>
         • Activities: ${activities.length > 0 ? activities.join(', ') : 'None'}<br>
-        • Experience Gained: ${Math.round(expGained).toLocaleString()} m.exp (${expPercentage}%)<br>
+        • Experience Gained: ${Number(expGained).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} millions (${expPercentage}%)<br>
         • Current Progress: ${currentProgress}%<br>
     `;
     summaryElement.classList.remove('show');
@@ -523,7 +523,7 @@ function updateDisplay(expGained, expPercentage, requiredExp, mapName, activitie
     const historyList = document.getElementById('expHistory');
     const listItem = document.createElement('li');
     listItem.innerHTML = `
-        <span class="history-map-info">${mapName} (${mapLevel}): ${Number(expGained).toLocaleString(undefined, {maximumFractionDigits: 2})} m.exp (${expPercentage}%)</span>
+        <span class="history-map-info">${mapName} (${mapLevel}): ${Number(expGained).toLocaleString(undefined, {maximumFractionDigits: 2})} millions (${expPercentage}%)</span>
         <span class="history-activities">Activities: ${activities.join(', ') || 'None'}</span>
     `;
     historyList.insertBefore(listItem, historyList.firstChild);
@@ -547,7 +547,7 @@ function loadFromLocalStorage() {
             const historyList = document.getElementById('expHistory');
             const listItem = document.createElement('li');
             listItem.innerHTML = `
-                <span class="history-map-info">${entry.mapName} (${entry.mapLevel}): ${Number(entry.expGained).toLocaleString(undefined, {maximumFractionDigits: 2})} m.exp (${entry.percentage}%)</span>
+                <span class="history-map-info">${entry.mapName} (${entry.mapLevel}): ${Number(entry.expGained).toLocaleString(undefined, {maximumFractionDigits: 2})} millions (${entry.percentage}%)</span>
                 <span class="history-activities">Activities: ${entry.activities?.join(', ') || 'None'}</span>
             `;
             historyList.appendChild(listItem);
@@ -627,24 +627,26 @@ function initExpHistoryChart() {
             labels: [],
             datasets: [
                 {
-                    label: 'Experience Gained (%)',
+                    label: 'Experience Gained',
                     data: [],
                     backgroundColor: 'rgba(175, 96, 37, 0.6)',
                     borderColor: '#af6025',
                     borderWidth: 1,
                     yAxisID: 'y',
+                    xAxisID: 'x2',
                     barThickness: 20,
                     order: 1
                 },
                 {
-                    label: 'Level Progress (%)',
+                    label: 'Level Progress',
                     data: [],
                     type: 'line',
                     borderColor: '#e7c491',
                     borderWidth: 2,
                     yAxisID: 'y',
+                    xAxisID: 'x',
                     fill: false,
-                    tension: 0, // Changed from 0.4 to 0 for straight lines
+                    tension: 0,
                     order: 0
                 }
             ]
@@ -655,11 +657,12 @@ function initExpHistoryChart() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    right: 20
+                    right: 50
                 }
             },
             scales: {
                 x: {
+                    position: 'top',
                     beginAtZero: true,
                     max: 100,
                     grid: {
@@ -667,6 +670,35 @@ function initExpHistoryChart() {
                     },
                     ticks: {
                         color: '#e7c491'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Level Progress (%)',
+                        color: '#e7c491',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x2: {
+                    position: 'bottom',
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: '#e7c491',
+                        callback: function(value) {
+                            return value + ' millions';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Experience Gained (millions)',
+                        color: '#e7c491',
+                        font: {
+                            size: 12
+                        }
                     }
                 },
                 y: {
@@ -717,7 +749,7 @@ function initExpHistoryChart() {
                             const entry = limitedEntries[dataIndex];
                             
                             if (context.datasetIndex === 0) {  // Experience Gained bar
-                                return `Experience: ${Math.round(entry.expGained).toLocaleString()} m.exp (${entry.percentage}%)`;
+                                return `Experience: ${Number(entry.expGained).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} millions`;
                             } else {  // Level Progress line
                                 return `Level Progress: ${context.parsed.x.toFixed(2)}%`;
                             }
@@ -757,22 +789,25 @@ function updateExpHistoryChart() {
     const entries = [...expHistory].reverse();
     const limitedEntries = limit === 'all' ? entries : entries.slice(0, parseInt(limit));
 
-    // แก้ไขรูปแบบการแสดงชื่อแมพและเลเวล
     expHistoryChart.data.labels = limitedEntries.map(entry => 
         entry.mapLevel ? `${entry.mapName} (${entry.mapLevel})` : entry.mapName
     );
 
-    // อัพเดทข้อมูลกราฟ
-    expHistoryChart.data.datasets[0].data = limitedEntries.map(entry => parseFloat(entry.percentage));
+    // Update data for both datasets
+    expHistoryChart.data.datasets[0].data = limitedEntries.map(entry => parseFloat(entry.expGained));
     expHistoryChart.data.datasets[1].data = limitedEntries.map(entry => 
         calculateCurrentProgress(entry.level, parseFloat(entry.totalExp))
     );
 
-    // ปรับความสูงของ container ตามจำนวนข้อมูล
+    // Find max experience gained for x2 axis
+    const maxExp = Math.max(...limitedEntries.map(entry => parseFloat(entry.expGained)));
+    expHistoryChart.options.scales.x2.max = Math.ceil(maxExp * 1.1); // Add 10% padding
+
+    // Update container height
     const container = document.getElementById('expHistoryChart');
-    const rowHeight = 30; // ความสูงต่อแถว
-    const minHeight = 300; // ความสูงขั้นต่ำ
-    const totalHeight = Math.max(minHeight, rowHeight * limitedEntries.length + 100); // +100 for padding and legend
+    const rowHeight = 30;
+    const minHeight = 300;
+    const totalHeight = Math.max(minHeight, rowHeight * limitedEntries.length + 100);
     container.style.height = `${totalHeight}px`;
 
     expHistoryChart.update();
@@ -791,8 +826,8 @@ function updateAnalysisSummary() {
     
     document.getElementById('avgExpPerMap').textContent = 
         avgExpData.exp > 0 ? 
-        `${avgExpData.exp} m.exp (${avgExpData.percentage}%)` : 
-        '0 m.exp (0%)';
+        `${avgExpData.exp} millions (${avgExpData.percentage}%)` : 
+        '0 millions (0%)';
     
     document.getElementById('mapsToLevel').textContent = 
         mapsToLevel !== '-' ? `${mapsToLevel} maps` : '-';
@@ -1218,7 +1253,7 @@ function updateLevelInfo() {
     document.getElementById('currentLevel').value = level;
 
     const nextLevelExp = Math.round((levelExpTable[level + 1] || levelExpTable[level]) / 1000000);
-    document.getElementById('nextLevelExp').value = nextLevelExp.toLocaleString() + ' m.exp';
+    document.getElementById('nextLevelExp').value = nextLevelExp.toLocaleString() + ' millions';
 }
 
 // แก้ไข event listener สำหรับ current exp input
