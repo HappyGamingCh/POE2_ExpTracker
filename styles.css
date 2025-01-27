@@ -943,14 +943,45 @@ select:invalid:focus {
 
 .visitor-count {
     text-align: center;
-    margin: 15px 0;
-    padding: 5px;
-    background: rgba(45, 24, 16, 0.3);
-    border-radius: 5px;
+    margin: 15px auto;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #2d1810 0%, #1a1410 100%);
+    border-radius: 20px;
     border: 1px solid #af6025;
+    max-width: fit-content;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
-.visitor-count img {
-    display: inline-block;
-    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+.visitor-count::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(175, 96, 37, 0.1), transparent);
+    pointer-events: none;
+}
+
+.visitor-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visitor-badge img {
+    height: 20px;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+.visitor-count:hover {
+    border-color: #e7c491;
+    box-shadow: 0 4px 12px rgba(175, 96, 37, 0.2);
+}
+
+.visitor-count:hover img {
+    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.4));
 }

@@ -611,6 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDefaultValues();
     loadFromLocalStorage();
     updateAnalysisSummary();
+    fetchVisitorCount();
 });
 
 function initExpHistoryChart() {
@@ -1279,3 +1280,20 @@ function updateLevelInfo() {
 
 // แก้ไข event listener สำหรับ current exp input
 document.getElementById('currentExp').addEventListener('input', updateLevelInfo);
+
+async function fetchVisitorCount() {
+    try {
+        // ใช้ API endpoint ที่รองรับ CORS
+        const response = await fetch('https://api.countapi.xyz/hit/HappyGamingCh.POE2_ExpTracker/visits');
+        const data = await response.json();
+        const visitorNumber = document.querySelector('.visitor-number');
+        if (data && data.value) {
+            visitorNumber.textContent = data.value.toLocaleString();
+        }
+    } catch (error) {
+        console.error('Error fetching visitor count:', error);
+        // ถ้าเกิด error ให้แสดงเป็น 0
+        const visitorNumber = document.querySelector('.visitor-number');
+        visitorNumber.textContent = '0';
+    }
+}
