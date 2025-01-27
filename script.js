@@ -8,18 +8,18 @@ let expHistoryChart = null;
 
 // เพิ่มตัวแปร object สำหรับเก็บ URL รูปภาพของแต่ละ class
 const characterImages = {
-    'Acolyte': 'https://i.imgur.com/FKRmQ4t.png',
-    'Blood-Mage': 'https://i.imgur.com/kT2IoGY.png',
-    'Chronomancer': 'https://i.imgur.com/PLLbRlV.png',
-    'Deadeye': 'https://i.imgur.com/fZHeIzf.png',
-    'Gemling': 'https://i.imgur.com/FiAG2LZ.png',
-    'Infernalist': 'https://i.imgur.com/lr8AKMm.png',
-    'Invoker': 'https://i.imgur.com/dJCqLq5.png',
-    'Pathfinder': 'https://i.imgur.com/ZV36CqA.png',
-    'Stormweaver': 'https://i.imgur.com/9EUzMZI.png',
-    'Titan': 'https://i.imgur.com/c6phl6C.png',
-    'Warbringer': 'https://i.imgur.com/HTfc0Ap.png',
-    'Witch Hunter': 'https://i.imgur.com/kqvQpdB.png'
+    'Acolyte': 'https://i.imgur.com/pdxd0XD.png',
+    'Blood-Mage': 'https://i.imgur.com/B1dKqaS.png',
+    'Chronomancer': 'https://i.imgur.com/fhMqOvd.png',
+    'Deadeye': 'https://i.imgur.com/2aFbkvL.png',
+    'Gemling': 'https://i.imgur.com/4OJO1yi.png',
+    'Infernalist': 'https://i.imgur.com/6p5mwf8.png',
+    'Invoker': 'https://i.imgur.com/r6V5RPo.png',
+    'Pathfinder': 'https://i.imgur.com/FNlwB2v.png',
+    'Stormweaver': 'https://i.imgur.com/N5Qi6d9.png',
+    'Titan': 'https://i.imgur.com/6wVejlD.png',
+    'Warbringer': 'https://i.imgur.com/Fuii2xl.png',
+    'Witch Hunter': 'https://i.imgur.com/eNxwH8f.png'
 };
 
 // เพิ่มตาราง cumulative exp
@@ -448,8 +448,8 @@ function recordExperience() {
         return;
     }
 
-    // คำนวณ exp gained
-    const expGained = Math.max(0, (totalExp - previousExp)).toFixed(2);
+    // คำนวณ exp gained - remove Math.max to allow negative values
+    const expGained = (totalExp - previousExp).toFixed(2);
     
     // คำนวณ percentage จาก exp gained เทียบกับ exp ที่ต้องการในเลเวลปัจจุบัน
     const expPercentage = calculateExpPercentage(currentLevel, expGained);
@@ -629,13 +629,20 @@ function initExpHistoryChart() {
                 {
                     label: 'Experience Gained',
                     data: [],
-                    backgroundColor: 'rgba(175, 96, 37, 0.6)',
-                    borderColor: '#af6025',
+                    backgroundColor: function(context) {
+                        const value = context.raw;
+                        return value < 0 ? 'rgba(255, 99, 132, 0.6)' : 'rgba(175, 96, 37, 0.6)';
+                    },
+                    borderColor: function(context) {
+                        const value = context.raw;
+                        return value < 0 ? '#ff6384' : '#af6025';
+                    },
                     borderWidth: 1,
                     yAxisID: 'y',
                     xAxisID: 'x2',
                     barThickness: 20,
-                    order: 1
+                    order: 1,
+                    base: 0
                 },
                 {
                     label: 'Level Progress',
@@ -689,7 +696,7 @@ function initExpHistoryChart() {
                     ticks: {
                         color: '#e7c491',
                         callback: function(value) {
-                            return value + ' millions';
+                            return value;
                         }
                     },
                     title: {
@@ -699,7 +706,8 @@ function initExpHistoryChart() {
                         font: {
                             size: 12
                         }
-                    }
+                    },
+                    suggestedMin: 0
                 },
                 y: {
                     grid: {
@@ -749,7 +757,9 @@ function initExpHistoryChart() {
                             const entry = limitedEntries[dataIndex];
                             
                             if (context.datasetIndex === 0) {  // Experience Gained bar
-                                return `Experience: ${Number(entry.expGained).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} millions`;
+                                const expValue = Number(entry.expGained);
+                                const sign = expValue < 0 ? '-' : '';
+                                return `Experience: ${sign}${Math.abs(expValue).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} millions`;
                             } else {  // Level Progress line
                                 return `Level Progress: ${context.parsed.x.toFixed(2)}%`;
                             }
@@ -801,14 +811,25 @@ function updateExpHistoryChart() {
 
     // Find max experience gained for x2 axis
     const maxExp = Math.max(...limitedEntries.map(entry => parseFloat(entry.expGained)));
-    expHistoryChart.options.scales.x2.max = Math.ceil(maxExp * 1.1); // Add 10% padding
+    
+    // Set axis limits - only update max, min stays at 0
+    expHistoryChart.options.scales.x2.max = Math.ceil(maxExp * 1.1);
 
-    // Update container height
+    // Update container height with more space per entry
     const container = document.getElementById('expHistoryChart');
-    const rowHeight = 30;
-    const minHeight = 300;
-    const totalHeight = Math.max(minHeight, rowHeight * limitedEntries.length + 100);
-    container.style.height = `${totalHeight}px`;
+    const rowHeight = limit === 'all' ? 40 : 30; // Increase row height for 'all' entries
+    const paddingHeight = 100; // Additional padding for axes and legend
+    const totalHeight = rowHeight * limitedEntries.length + paddingHeight;
+    
+    // Set minimum height only for limited entries
+    const finalHeight = limit === 'all' 
+        ? totalHeight  // No minimum height for 'all'
+        : Math.max(300, totalHeight); // Use minimum height for limited entries
+    
+    container.style.height = `${finalHeight}px`;
+
+    // Update bar thickness based on number of entries
+    expHistoryChart.data.datasets[0].barThickness = limit === 'all' ? 30 : 20;
 
     expHistoryChart.update();
 }

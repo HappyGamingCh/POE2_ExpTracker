@@ -640,14 +640,10 @@ select:invalid:focus {
 }
 
 #expHistoryChart {
-    max-height: 400px;
-    transition: max-height 0.3s ease-out;
-    overflow: hidden;
+    transition: height 0.3s ease;
+    overflow: visible !important; /* Allow bars to overflow */
     min-height: 300px;
-    height: calc(30px * 20); /* 30px ต่อแถว x จำนวนแถวสูงสุดที่ต้องการ */
-    max-height: calc(30px * 20);
-    transition: all 0.3s ease;
-    overflow: hidden;
+    height: auto;
 }
 
 #expHistoryChart.hidden {
@@ -655,6 +651,7 @@ select:invalid:focus {
     height: 0;
     min-height: 0;
     padding: 0;
+    overflow: hidden !important;
 }
 
 #expHistoryChart canvas {
